@@ -1,0 +1,51 @@
+service: split-stack-test
+provider: aws
+
+plugins:
+  - serverless-plugin-split-stacks
+  - serverless-plugin-aws-alerts
+
+custom:
+  alerts:
+    stages:
+      - dev
+    topics:
+        alarm: "foo"
+    definitions:
+      functionErrors:
+        threshold: 5
+      functionThrottles:
+        threshold: 10
+    function:
+      - functionErrors
+      - functionThrottles
+      - functionTimeouts
+
+functions:
+  a:
+    handler: handlers.a
+    role: customRole
+    events:
+      - http:
+          path: /
+          method: ANY
+  b:
+    handler: handlers.b
+    events:
+      - s3: split-stacks-test-${self:provider.stage}-abc
+
+resources:
+  Resources:
+    customRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: role1
+        Path: "/"
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole

@@ -1,0 +1,572 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "ALogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/split-stack-test-dev-a"
+      }
+    },
+    "BLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/split-stack-test-dev-b"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "dev",
+                  "split-stack-test",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/split-stack-test-dev-a:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/split-stack-test-dev-b:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/split-stack-test-dev-a:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/split-stack-test-dev-b:*:*"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "split-stack-test",
+              "dev",
+              "us-east-1",
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "ALambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/split-stack-test/dev/1493420349425-2017-04-28T22:59:09.425Z/split-stack-test.zip"
+        },
+        "FunctionName": "split-stack-test-dev-a",
+        "Handler": "handlers.a",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "customRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6
+      },
+      "DependsOn": [
+        "ALogGroup",
+        "customRole"
+      ]
+    },
+    "ALambdaVersionNNIqov9JcJJpw1WELe3sOgUuO43WSml5bzqbqe6QZcA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ALambdaFunction"
+        },
+        "CodeSha256": "NNIqov9JcJJpw1WELe3sOgUuO43WSml5bzqbqe6QZcA="
+      }
+    },
+    "BLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/split-stack-test/dev/1493420349425-2017-04-28T22:59:09.425Z/split-stack-test.zip"
+        },
+        "FunctionName": "split-stack-test-dev-b",
+        "Handler": "handlers.b",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6
+      },
+      "DependsOn": [
+        "BLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "BLambdaVersionNNIqov9JcJJpw1WELe3sOgUuO43WSml5bzqbqe6QZcA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BLambdaFunction"
+        },
+        "CodeSha256": "NNIqov9JcJJpw1WELe3sOgUuO43WSml5bzqbqe6QZcA="
+      }
+    },
+    "S3BucketSplitstackstestdevabc": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "split-stacks-test-dev-abc",
+        "NotificationConfiguration": {
+          "LambdaConfigurations": [
+            {
+              "Event": "s3:ObjectCreated:*",
+              "Function": {
+                "Fn::GetAtt": [
+                  "BLambdaFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "BLambdaPermissionSplitstackstestdevabcS3": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "s3.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:s3:::split-stacks-test-dev-abc"
+            ]
+          ]
+        }
+      }
+    },
+    "ApiGatewayRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "dev-split-stack-test"
+      }
+    },
+    "ApiGatewayMethodAny": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ALambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayDeployment1493420349434": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "StageName": "dev"
+      },
+      "DependsOn": [
+        "ApiGatewayMethodAny"
+      ]
+    },
+    "ALambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ALambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "AwsAlertsAlarm": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "foo"
+      }
+    },
+    "AFunctionErrorsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Errors",
+        "Threshold": 5,
+        "Statistic": "Maximum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "OKActions": [],
+        "AlarmActions": [
+          {
+            "Ref": "AwsAlertsAlarm"
+          }
+        ],
+        "InsufficientDataActions": [],
+        "Dimensions": [
+          {
+            "Name": "ALambdaFunctionName",
+            "Value": {
+              "Ref": "ALambdaFunction"
+            }
+          }
+        ]
+      }
+    },
+    "AFunctionThrottlesAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Throttles",
+        "Threshold": 10,
+        "Statistic": "Sum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "OKActions": [],
+        "AlarmActions": [
+          {
+            "Ref": "AwsAlertsAlarm"
+          }
+        ],
+        "InsufficientDataActions": [],
+        "Dimensions": [
+          {
+            "Name": "ALambdaFunctionName",
+            "Value": {
+              "Ref": "ALambdaFunction"
+            }
+          }
+        ]
+      }
+    },
+    "AFunctionTimeoutsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Namespace": "split-stack-test-dev",
+        "MetricName": "FunctionTimeoutsALambdaFunction",
+        "Threshold": 0,
+        "Statistic": "Sum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "OKActions": [],
+        "AlarmActions": [
+          {
+            "Ref": "AwsAlertsAlarm"
+          }
+        ],
+        "InsufficientDataActions": []
+      }
+    },
+    "ALambdaFunctionFunctionTimeoutsLogMetricFilterALERT": {
+      "Type": "AWS::Logs::MetricFilter",
+      "DependsOn": "ALogGroup",
+      "Properties": {
+        "FilterPattern": "Task timed out after",
+        "LogGroupName": "/aws/lambda/split-stack-test-dev-a",
+        "MetricTransformations": [
+          {
+            "MetricValue": 1,
+            "MetricNamespace": "split-stack-test-dev",
+            "MetricName": "FunctionTimeoutsALambdaFunction"
+          }
+        ]
+      }
+    },
+    "ALambdaFunctionFunctionTimeoutsLogMetricFilterOK": {
+      "Type": "AWS::Logs::MetricFilter",
+      "DependsOn": "ALogGroup",
+      "Properties": {
+        "FilterPattern": "",
+        "LogGroupName": "/aws/lambda/split-stack-test-dev-a",
+        "MetricTransformations": [
+          {
+            "MetricValue": 0,
+            "MetricNamespace": "split-stack-test-dev",
+            "MetricName": "FunctionTimeoutsALambdaFunction"
+          }
+        ]
+      }
+    },
+    "BFunctionErrorsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Errors",
+        "Threshold": 5,
+        "Statistic": "Maximum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "OKActions": [],
+        "AlarmActions": [
+          {
+            "Ref": "AwsAlertsAlarm"
+          }
+        ],
+        "InsufficientDataActions": [],
+        "Dimensions": [
+          {
+            "Name": "BLambdaFunctionName",
+            "Value": {
+              "Ref": "BLambdaFunction"
+            }
+          }
+        ]
+      }
+    },
+    "BFunctionThrottlesAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Throttles",
+        "Threshold": 10,
+        "Statistic": "Sum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "OKActions": [],
+        "AlarmActions": [
+          {
+            "Ref": "AwsAlertsAlarm"
+          }
+        ],
+        "InsufficientDataActions": [],
+        "Dimensions": [
+          {
+            "Name": "BLambdaFunctionName",
+            "Value": {
+              "Ref": "BLambdaFunction"
+            }
+          }
+        ]
+      }
+    },
+    "BFunctionTimeoutsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Namespace": "split-stack-test-dev",
+        "MetricName": "FunctionTimeoutsBLambdaFunction",
+        "Threshold": 0,
+        "Statistic": "Sum",
+        "Period": 60,
+        "EvaluationPeriods": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "OKActions": [],
+        "AlarmActions": [
+          {
+            "Ref": "AwsAlertsAlarm"
+          }
+        ],
+        "InsufficientDataActions": []
+      }
+    },
+    "BLambdaFunctionFunctionTimeoutsLogMetricFilterALERT": {
+      "Type": "AWS::Logs::MetricFilter",
+      "DependsOn": "BLogGroup",
+      "Properties": {
+        "FilterPattern": "Task timed out after",
+        "LogGroupName": "/aws/lambda/split-stack-test-dev-b",
+        "MetricTransformations": [
+          {
+            "MetricValue": 1,
+            "MetricNamespace": "split-stack-test-dev",
+            "MetricName": "FunctionTimeoutsBLambdaFunction"
+          }
+        ]
+      }
+    },
+    "BLambdaFunctionFunctionTimeoutsLogMetricFilterOK": {
+      "Type": "AWS::Logs::MetricFilter",
+      "DependsOn": "BLogGroup",
+      "Properties": {
+        "FilterPattern": "",
+        "LogGroupName": "/aws/lambda/split-stack-test-dev-b",
+        "MetricTransformations": [
+          {
+            "MetricValue": 0,
+            "MetricNamespace": "split-stack-test-dev",
+            "MetricName": "FunctionTimeoutsBLambdaFunction"
+          }
+        ]
+      }
+    },
+    "customRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "role1",
+        "Path": "/",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      }
+    },
+    "ALambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ALambdaVersionNNIqov9JcJJpw1WELe3sOgUuO43WSml5bzqbqe6QZcA"
+      }
+    },
+    "BLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "BLambdaVersionNNIqov9JcJJpw1WELe3sOgUuO43WSml5bzqbqe6QZcA"
+      }
+    },
+    "ServiceEndpoint": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiGatewayRestApi"
+            },
+            ".execute-api.us-east-1.amazonaws.com/dev"
+          ]
+        ]
+      }
+    }
+  }
+}
