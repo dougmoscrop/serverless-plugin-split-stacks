@@ -23,20 +23,12 @@ module.exports = class StackSplitter {
     this.log = msg => this.serverless.cli.log(`[serverless-plugin-split-stacks]: ${msg}`);
   }
 
-  init() {
-    return this.provider.getServerlessDeploymentBucketName(this.options.stage, this.options.region)
-      .then(bucketName => {
-        this.bucketName = bucketName;
-      });
-  }
-
   split() {
     this.rootTemplate = this.serverless.service.provider.compiledCloudFormationTemplate;
     this.resourceMigrations = {};
     this.resourcesById = Object.assign({}, this.rootTemplate.Resources);
 
     return Promise.resolve()
-      .then(() => this.init())
       .then(() => this.groupResourcesByType())
       .then(() => this.migrateResources())
       .then(() => this.replaceReferences())
@@ -75,12 +67,14 @@ module.exports = class StackSplitter {
         this.reconcile(resourceId, dependency.id, {
           ResourceMigrated: (resourceMigration) => {
             const parameter = resourceMigration.parameterize(dependency.id, dependency.value);
+
             dependency.replace(parameter);
 
             this.depends(resourceMigration.stackResource, dependency.id);
           },
           DependencyMigrated: (dependencyMigration) => {
             const output = this.nestedOutput(dependency, dependencyMigration);
+
             dependency.replace(output);
 
             this.depends(resource, dependencyMigration.stackName);
@@ -89,6 +83,7 @@ module.exports = class StackSplitter {
             const output = this.nestedOutput(dependency, dependencyMigration);
             const dependencyName = dependency.getDependencyName();
             const parameter = resourceMigration.parameterize(dependencyName, output);
+
             dependency.replace(parameter);
 
             this.depends(resourceMigration.stackResource, dependencyMigration.stackName);
@@ -129,22 +124,27 @@ module.exports = class StackSplitter {
   }
 
   mergeStackResources() {
-    _.each(this.resourceMigrations, migration => {
-      delete this.rootTemplate.Resources[migration.logicalId];
-      this.rootTemplate.Resources[migration.stackName] = migration.stackResource;
-    });
+    if (this.resourceMigrations) {
+      _.each(this.resourceMigrations, migration => {
+        delete this.rootTemplate.Resources[migration.logicalId];
+        this.rootTemplate.Resources[migration.stackName] = migration.stackResource;
+      });
+    }
   }
 
   writeNestedStacks() {
-    _.each(this.resourceMigrations, migration => {
-     const destination = path.join(
-       this.serverless.config.servicePath,
-       '.serverless',
-       migration.fileName
-     );
+    if (this.nestedStacks) {
+      _.each(this.nestedStacks, (stack, stackName) => {
+        const fileName = this.getFileName(stackName);
+        const destination = path.join(
+         this.serverless.config.servicePath,
+         '.serverless',
+         fileName
+       );
 
-     this.serverless.utils.writeFileSync(destination, migration.stack);
-   });
+       this.serverless.utils.writeFileSync(destination, stack);
+     });
+   }
   }
 
   logSummary() {
@@ -158,14 +158,16 @@ module.exports = class StackSplitter {
   }
 
   upload() {
-    // todo: read these from the file system?
-    if (this.nestedStackDetails) {
-      return this.init()
-        .then(() => {
-          return _.map(this.nestedStackDetails, (details, stackName) => {
+    // TODO: read these from the file system?
+    if (this.nestedStackResources) {
+      return this.getBucketName()
+        .then((bucket) => {
+          return _.map(this.nestedStackResources, (resource, stackName) => {
+            const key = this.getS3Key(stackName);
+
             const params = {
-              Bucket: details.bucket,
-              Key: details.key,
+              Bucket: bucket,
+              Key: key,
               Body: JSON.stringify(this.nestedStacks[stackName]),
               ContentType: 'application/json',
             };
@@ -178,5 +180,4 @@ module.exports = class StackSplitter {
         });
     }
   }
-
 };

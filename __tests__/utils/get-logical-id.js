@@ -14,8 +14,13 @@ test('returns a Ref', t => {
 });
 
 test('returns a GetAtt', t => {
-	const logicalId = utils.getLogicalId({ 'Fn::GetAtt': ['foo', 'arn'] });
-	t.deepEqual(logicalId, 'fooarn');
+	const logicalId = utils.getLogicalId({ 'Fn::GetAtt': ['baz', 'arn'] });
+	t.deepEqual(logicalId, 'baz');
+});
+
+test('returns a string', t => {
+	const logicalId = utils.getLogicalId('bar');
+	t.deepEqual(logicalId, 'bar');
 });
 
 test('throws for unrecognized values', t => {
