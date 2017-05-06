@@ -58,12 +58,14 @@ test('prints a summary', t => {
   const splitter = t.context.splitter;
 
   splitter.nestedStacks = {
-    foo: {}
+    foo: {
+      Resources: {}
+    }
   };
   splitter.log = sinon.spy();
   splitter.logSummary();
 
-  t.true(splitter.log.calledOnce);
+  t.true(splitter.log.called);
 });
 
 test('stays quiet when nothing was split', t => {
