@@ -2,7 +2,7 @@
 
 The goal if this plugin is to split some resources off in to nested stacks to work around the 200 CloudFormation resource limit.
 
-Migrating resources to nested stacks is tricky beacuse some plugins rely on querying the resource from the mai stack and would need to understand this. There are also plenty of issues with moving resources in existing deployments (you frequently get 'resource already exists' errors). Because of this, this plugin is very conservative. It moves only resources of types that seem to be easy to move.
+Migrating resources to nested stacks is tricky beacuse some plugins rely on querying the resource from the main stack and would need to understand this. There are also plenty of issues with moving resources in existing deployments (you frequently get 'resource already exists' errors). Because of this, this plugin is very conservative. It moves only resources of types that seem to be easy to move.
 
 You can see a list of migrations in `lib/migrate-resources.js`.
 
