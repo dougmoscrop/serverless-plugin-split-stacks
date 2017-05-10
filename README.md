@@ -1,3 +1,5 @@
+Be advised: This plugin currently migrates the `RestApi` resource to a nested stack, which causes your URL to change.
+
 # serverless-plugin-split-stacks
 
 The goal if this plugin is to split some resources off in to nested stacks to work around the 200 CloudFormation resource limit.
