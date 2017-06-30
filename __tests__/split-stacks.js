@@ -8,6 +8,7 @@ const sampleTemplate = require('./fixtures/sample-template.json');
 
 test.beforeEach(t => {
   t.context.serverless = {
+    version: '1.13.2',
     service: {
       provider: {
         compiledCloudFormationTemplate: sampleTemplate
@@ -52,7 +53,7 @@ test('splits', t => {
     .then(() => {
       t.true(true);
     });
-})
+});
 
 test('prints a summary', t => {
   const splitter = t.context.splitter;
@@ -75,4 +76,14 @@ test('stays quiet when nothing was split', t => {
   splitter.logSummary();
 
   t.false(splitter.log.called);
+});
+
+test('throws if older serverless version is used', t => {
+  const e = t.throws(() => {
+     new StackSplitter({
+       version: '1.10.0'
+     });
+  });
+
+  t.true(e.message.indexOf('requires serverless 1.13 or higher') > 0);
 });

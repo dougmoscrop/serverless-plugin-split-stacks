@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const semver = require('semver');
 
 const migrateResources = require('./lib/migrate-resources');
 const replaceReferences = require('./lib/replace-references');
@@ -14,6 +15,10 @@ const utils = require('./lib/utils');
 module.exports = class StackSplitter {
 
   constructor(serverless, options) {
+    if (!semver.satisfies(serverless.version, '>= 1.13')) {
+      throw new Error('serverless-plugin-split-stacks requires serverless 1.13 or higher!');
+    }
+
     this.serverless = serverless;
     this.options = options;
     this.provider = this.serverless.getProvider('aws');
