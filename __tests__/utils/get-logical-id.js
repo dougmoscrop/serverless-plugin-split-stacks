@@ -9,22 +9,22 @@ test.beforeEach(t => {
 });
 
 test('returns a Ref', t => {
-	const logicalId = utils.getLogicalId({ Ref: 'foo' });
+	const logicalId = t.context.getLogicalId({ Ref: 'foo' });
 	t.deepEqual(logicalId, 'foo');
 });
 
 test('returns a GetAtt', t => {
-	const logicalId = utils.getLogicalId({ 'Fn::GetAtt': ['baz', 'arn'] });
+	const logicalId = t.context.getLogicalId({ 'Fn::GetAtt': ['baz', 'arn'] });
 	t.deepEqual(logicalId, 'baz');
 });
 
 test('returns a string', t => {
-	const logicalId = utils.getLogicalId('bar');
+	const logicalId = t.context.getLogicalId('bar');
 	t.deepEqual(logicalId, 'bar');
 });
 
 test('throws for unrecognized values', t => {
 	t.throws(() => {
-		utils.getLogicalId({ 'Fn::Join': ['foo', 'arn'] });
+		t.context.getLogicalId({ 'Fn::Join': ['foo', 'arn'] });
 	});
 });
