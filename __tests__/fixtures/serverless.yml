@@ -19,7 +19,6 @@ custom:
     function:
       - functionErrors
       - functionThrottles
-      - functionTimeouts
 
 functions:
   a:
