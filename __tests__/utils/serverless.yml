@@ -1,0 +1,56 @@
+service: groups-admn-bff
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: ${opt:region}
+  stage: ${opt:stage}
+  profile: groups-admn-bff-${opt:stage}
+  iamRoleStatements: ${file(./serverless/iamRoleStatements.yml)}
+
+plugins:
+  - serverless-plugin-include-dependencies
+  - serverless-plugin-common-excludes
+  - serverless-plugin-custom-domain
+  - serverless-plugin-aws-alerts
+  - serverless-plugin-log-subscription
+  - serverless-plugin-tracing
+  - serverless-prune-plugin
+
+package:
+  exclude:
+    - terraform/**
+    - serverless/**
+
+custom:
+  alerts: ${file(./serverless/alerts.yml)}
+  config: ${file(./serverless/config/${opt:stage}-${opt:region}.yml)}
+  domain: ${self:custom.config.domain}
+  logSubscription: ${self:custom.config.logSubscription}
+  prune:
+    automatic: true
+    number: 3
+
+functions:
+  app:
+    handler: src/app/index.handler
+    memorySize: 1024
+    timeout: 30
+    environment: ${self:custom.config.env}
+    events:
+      - http: ANY /
+      - http:
+          method: ANY
+          path: /{any+}
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Request-Id
+            allowCredentials: true
