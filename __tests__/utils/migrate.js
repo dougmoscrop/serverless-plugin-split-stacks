@@ -37,25 +37,13 @@ test('should find no references when resourcesById is empty', t => {
 	t.true(typeof migration.stackName === 'string');
 });
 
-test('should handle repeat migrations', t => {
+test('should throw if you try to migrate a resource that was already migrated', t => {
 	const foo = {};
 
 	t.context.resourcesById = { foo };
+	t.context.resourceMigrations.foo = {};
 	t.context.rootTemplate.Resources = { foo };
 
-  t.context.migrate('foo', 'Bar');
-	t.context.migrate('foo', 'Bar');
-
-	t.true(Object.keys(t.context.resourceMigrations).length === 1);
-});
-
-test('should throw if you try to migrate the same resource to two differnet stacks', t => {
-	const foo = {};
-
-	t.context.resourcesById = { foo };
-	t.context.rootTemplate.Resources = { foo };
-
-  t.context.migrate('foo', 'Bar');
 	t.throws(() => t.context.migrate('foo', 'Baz'));
 });
 

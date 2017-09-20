@@ -3,7 +3,8 @@
 const _ = require('lodash');
 const semver = require('semver');
 
-const migrateResources = require('./lib/migrate-resources');
+const migrateExistingResources = require('./lib/migrate-existing-resources');
+const migrateNewResources = require('./lib/migrate-new-resources');
 const replaceReferences = require('./lib/replace-references');
 const replaceOutputs = require('./lib/replace-outputs');
 const mergeStackResources = require('./lib/merge-stack-resources');
@@ -29,7 +30,8 @@ module.exports = class StackSplitter {
 
     Object.assign(this,
       utils,
-      { migrateResources },
+      { migrateExistingResources },
+      { migrateNewResources },
       { replaceReferences },
       { replaceOutputs },
       { mergeStackResources },
@@ -45,7 +47,8 @@ module.exports = class StackSplitter {
     this.resourceMigrations = {};
 
     return Promise.resolve()
-      .then(() => this.migrateResources())
+      .then(() => this.migrateExistingResources())
+      .then(() => this.migrateNewResources())
       .then(() => this.replaceReferences())
       .then(() => this.replaceOutputs())
       .then(() => this.mergeStackResources())

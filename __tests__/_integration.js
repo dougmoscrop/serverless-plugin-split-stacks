@@ -48,4 +48,7 @@ run('deploy')
   .catch(e => {
     console.error('Test failed: ', e, e.stackTrace);
     process.exitCode = 1;
+  })
+  .then(() => {
+    return run('remove')
   });
