@@ -20,6 +20,9 @@ test.beforeEach(t => {
     getProvider: () => t.context.provider
   };
   t.context.provider = {
+    naming: {
+      getStackName: () => 'test-stack'
+    },
     getServerlessDeploymentBucketName: () => Promise.resolve('bucket')
   };
   t.context.options = {};
@@ -27,6 +30,7 @@ test.beforeEach(t => {
 
   t.context.splitter.writeNestedStacks = sinon.spy();
   t.context.splitter.log = sinon.spy();
+  t.context.splitter.getStackSummary = sinon.stub().resolves([]);
 
   const first = {
     1: 'one'
