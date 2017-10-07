@@ -7,7 +7,12 @@ const utils = require('../../lib/utils');
 
 test.beforeEach(t => {
 	t.context = Object.assign({}, utils, {
-    resourcesById: {}
+    resourcesById: {},
+		serverless: {
+			service: {
+				provider: {}
+			}
+		}
   });
 });
 

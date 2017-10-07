@@ -29,3 +29,11 @@ test('calls write for each stack', t => {
 
 	t.true(t.context.serverless.utils.writeFileSync.calledTwice);
 });
+
+test('does nothing when there are no nested stacks', t => {
+	t.context.getFileName = () => 'foo.json';
+
+	t.context.writeNestedStacks();
+
+	t.false(t.context.serverless.utils.writeFileSync.called);
+});

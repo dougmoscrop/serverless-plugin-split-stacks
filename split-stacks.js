@@ -57,14 +57,14 @@ module.exports = class StackSplitter {
   }
 
   upload() {
-    return this.getBucketName()
-      .then(bucket => {
+    return this.provider.getServerlessDeploymentBucketName(this.options.stage, this.options.region)
+      .then(deploymentBucket => {
         const files = this.getNestedStackFiles();
 
-        return _.map(files, file => {
+        return Promise.all(_.map(files, file => {
           const params = {
-            Bucket: bucket,
-            Key: `${this.serverless.service.package.artifactDirectoryName}/${file.name}`,
+            Bucket: deploymentBucket,
+            Key: file.key,
             Body: file.createReadStream(),
             ContentType: 'application/json',
           };
@@ -73,7 +73,7 @@ module.exports = class StackSplitter {
             params,
             this.options.stage,
             this.options.region);
-        });
+        }));
       });
   }
 };
