@@ -13,9 +13,7 @@ test.beforeEach(t => {
       provider: {
         compiledCloudFormationTemplate: sampleTemplate
       },
-      package: {
-        artifactDirectoryName: 'test'
-      }
+      package: {}
     },
     getProvider: () => t.context.provider
   };

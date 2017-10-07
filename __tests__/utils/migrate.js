@@ -8,9 +8,8 @@ test.beforeEach(t => {
 	t.context = Object.assign({}, utils, {
 		serverless: {
 			service: {
-				package: {
-					artifactDirectoryName: '__test__'
-				}
+				provider: {},
+				package: {}
 			}
 		},
     resourcesById: {},
