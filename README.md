@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/dougmoscrop/serverless-plugin-split-stacks.svg?style=svg)](https://circleci.com/gh/dougmoscrop/serverless-plugin-split-stacks)
+
 Be advised: This plugin currently migrates the `RestApi` resource to a nested stack, which causes your URL to change.
 
 # serverless-plugin-split-stacks
