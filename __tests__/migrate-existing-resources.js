@@ -3,6 +3,7 @@
 const sinon = require('sinon');
 const test = require('ava');
 
+const stacksMap = require('../stacks-map');
 const migrateExistingResources = require('../lib/migrate-existing-resources');
 
 test.beforeEach(t => {
@@ -57,10 +58,12 @@ test('calls migrate when an existing resource still exists', t => {
 			LogicalResourceId: 'Foo'
 		}]);
 
-	t.context.resourcesById = { Foo: {}, Bar: {} };
+	stacksMap['AWS::Test::Resource'] = { destination: 'Foo' }
+	t.context.resourcesById = { Foo: { Type: 'AWS::Test::Resource' }, Bar: {} };
 
 	return t.context.migrateExistingResources()
 		.then(() => {
+				delete stacksMap['AWS::Test::Resource'];
 				t.true(t.context.migrate.called);
 		});
 });
