@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const _ = require('lodash');
 const semver = require('semver');
 
@@ -38,6 +39,17 @@ module.exports = class StackSplitter {
       { writeNestedStacks },
       { logSummary }
     );
+
+    // Load eventual stacks map customizations
+    const customizationsPath = path.resolve(serverless.config.servicePath, 'stacks-map.js');
+    try {
+      require(customizationsPath)
+    } catch (e) {
+      // If module not found ignore, otherwise crash
+      if (e.code !== 'MODULE_NOT_FOUND' || !e.message.endsWith(`'${customizationsPath}'`)) {
+        throw e;
+      }
+    }
   }
 
   split() {

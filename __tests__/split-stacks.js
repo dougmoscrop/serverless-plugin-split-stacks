@@ -15,7 +15,10 @@ test.beforeEach(t => {
       },
       package: {}
     },
-    getProvider: () => t.context.provider
+    getProvider: () => t.context.provider,
+    config: {
+      servicePath: __dirname
+    }
   };
   t.context.provider = {
     naming: {
