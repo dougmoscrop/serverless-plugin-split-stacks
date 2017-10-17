@@ -6,9 +6,11 @@ Be advised: This plugin currently migrates the `RestApi` resource to a nested st
 
 The goal if this plugin is to split some resources off in to nested stacks to work around the 200 CloudFormation resource limit.
 
-Migrating resources to nested stacks is tricky beacuse some plugins rely on querying the resource from the main stack and would need to understand this. There are also plenty of issues with moving resources in existing deployments (you frequently get 'resource already exists' errors). Because of this, this plugin is very conservative. It moves only resources of types that seem to be easy to move.
+Migrating resources to nested stacks is tricky because some plugins rely on querying the resource from the main stack and would need to understand this. There are also plenty of issues with moving resources in existing deployments (you frequently get 'resource already exists' errors). Because of this, this plugin is very conservative. It moves only resources of types that seem to be easy to move.
 
-__Default migrations map is configured within [split-stacks.js](https://github.com/dougmoscrop/serverless-plugin-split-stacks/blob/master/stacks-map.js)__
+## Stack mappings
+
+__Default migrations map is configured within [stacks-map.js](https://github.com/dougmoscrop/serverless-plugin-split-stacks/blob/master/stacks-map.js)__
 
 
 This map can be customized. To do so, introduce the `stacks-map.js` module in a root folder of your project (this module if exists will be transparently loaded by the plugin).
@@ -19,6 +21,21 @@ Example of customization, that moves DynamoDB resources to nested stack:
 const stacksMap = require('serverless-plugin-split-stacks/stacks-map');
 
 stacksMap['AWS::DynamoDB::Table'] = { destination: 'Dynamodb' };
+```
+
+Additionally you may conditionally resolve `destination` by providing a _function_ instead of fixed string.
+It's useful where we want to conditionally distribute resources of same type among different stacks.
+
+e.g. in following example we distribute one of the `AWS::IAM::Role` resources into `Dynamodb` nested stacks
+
+```javascript
+stacksMap['AWS::IAM::Role'] = {
+	destination: (resourceName, resource) => {
+    if (resourceName === 'DynamodbAutoscalingRole') return 'Dynamodb';
+    return null;
+  },
+};
+
 ```
 
 __Be careful when introducing any customizations to default config. Many kind of resources (as e.g. DynamoDB tables) cannot be freely moved between CloudFormation stacks__
