@@ -31,3 +31,11 @@ test('name uses GetAtt', t => {
 
 	t.deepEqual(reference.getDependencyName(), 'fooAttr');
 });
+
+test('name uses GetAtt string', t => {
+  const reference = new Reference('foo', {
+    value: { 'Fn::GetAtt': 'foo.Attr' }
+  });
+
+  t.deepEqual(reference.getDependencyName(), 'fooAttr');
+});
