@@ -37,5 +37,5 @@ test('name uses GetAtt string', t => {
     value: { 'Fn::GetAtt': 'foo.Attr' }
   });
 
-	t.deepEqual(reference.getDependencyName(), 'fooAttr');
+  t.deepEqual(reference.getDependencyName(), 'fooAttr');
 });
