@@ -4,6 +4,7 @@
   "description": "Split Serverless deployments in to nested CloudFormation stacks",
   "main": "split-stacks.js",
   "scripts": {
+    "test-bare": "ava",
     "test": "nyc --all ava",
     "integration-test": "node __tests__/_integration.js",
     "posttest": "eslint ."
