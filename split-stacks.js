@@ -14,7 +14,7 @@ const logSummary = require('./lib/log-summary');
 
 const utils = require('./lib/utils');
 
-module.exports = class StackSplitter {
+module.exports = class ServerlessPluginSplitStacks {
 
   constructor(serverless, options) {
     if (!semver.satisfies(serverless.version, '>= 1.13')) {
