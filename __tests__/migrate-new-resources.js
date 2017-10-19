@@ -9,11 +9,11 @@ test.beforeEach(t => {
 	t.context = Object.assign({ resourceMigrations: {} }, { migrateNewResources }, {
 		getStackName: () => 'test',
 		migrate: sinon.stub(),
-    constructor: {
-      stacksMap: {
+		constructor: {
+			stacksMap: {
 				'AWS::Logs::SubscriptionFilter': { destination: 'Filters', allowSuffix: true }
 			}
-    }
+		}
 	});
 });
 
