@@ -10,15 +10,14 @@ Migrating resources to nested stacks is tricky because some plugins rely on quer
 
 ## Stack mappings
 
-__Default migrations map is configured within [stacks-map.js](https://github.com/dougmoscrop/serverless-plugin-split-stacks/blob/master/stacks-map.js)__
-
+__Default stacks migrations map is configured at plugins `stacksMap` property, and it's default configuration can be seen in [lib/stacks-map.js](https://github.com/dougmoscrop/serverless-plugin-split-stacks/blob/master/lib/stacks-map.js)__
 
 This map can be customized. To do so, introduce the `stacks-map.js` module in a root folder of your project (this module if exists will be transparently loaded by the plugin).
 
 Example of customization, that moves DynamoDB resources to nested stack:
 
 ```javascript
-const stacksMap = require('serverless-plugin-split-stacks/stacks-map');
+const stacksMap = require('serverless-plugin-split-stacks').stacksMap
 
 stacksMap['AWS::DynamoDB::Table'] = { destination: 'Dynamodb' };
 ```

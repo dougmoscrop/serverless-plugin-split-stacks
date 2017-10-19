@@ -3,14 +3,14 @@
 const sinon = require('sinon');
 const test = require('ava');
 
-const stacksMap = require('../stacks-map');
 const migrateExistingResources = require('../lib/migrate-existing-resources');
 
 test.beforeEach(t => {
 	t.context = Object.assign({ resourceMigrations: {} }, { migrateExistingResources }, {
 		getStackName: name => `${name}NestedStack`,
 		getStackNameBase: name => `${name}NestedStack`,
-		migrate: sinon.stub()
+		migrate: sinon.stub(),
+    constructor: { stacksMap: { 'AWS::Test::Resource': { destination: 'Foo', allowSuffix: true } } }
 	});
 	t.context.provider = {
 		naming: {
@@ -60,12 +60,10 @@ test('calls migrate when an existing resource still exists', t => {
 			LogicalResourceId: 'Foo'
 		}]);
 
-	stacksMap['AWS::Test::Resource'] = { destination: 'Foo', allowSuffix: true }
 	t.context.resourcesById = { Foo: { Type: 'AWS::Test::Resource' }, Bar: {} };
 
 	return t.context.migrateExistingResources()
 		.then(() => {
-				delete stacksMap['AWS::Test::Resource'];
 				t.true(t.context.migrate.called);
 		});
 });

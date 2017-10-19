@@ -4,6 +4,7 @@ const path = require('path');
 const _ = require('lodash');
 const semver = require('semver');
 
+const stacksMap = require('./lib/stacks-map');
 const migrateExistingResources = require('./lib/migrate-existing-resources');
 const migrateNewResources = require('./lib/migrate-new-resources');
 const replaceReferences = require('./lib/replace-references');
@@ -14,7 +15,7 @@ const logSummary = require('./lib/log-summary');
 
 const utils = require('./lib/utils');
 
-module.exports = class ServerlessPluginSplitStacks {
+class ServerlessPluginSplitStacks {
 
   constructor(serverless, options) {
     if (!semver.satisfies(serverless.version, '>= 1.13')) {
@@ -88,4 +89,8 @@ module.exports = class ServerlessPluginSplitStacks {
         }));
       });
   }
-};
+}
+
+ServerlessPluginSplitStacks.stacksMap = stacksMap;
+
+module.exports = ServerlessPluginSplitStacks;
