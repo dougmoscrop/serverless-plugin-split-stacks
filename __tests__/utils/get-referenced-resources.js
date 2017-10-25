@@ -98,12 +98,17 @@ test('should find GetAtt references', t => {
             'Fn::GetAtt': ['def', 'arn']
           }
         },
+        NestedString: {
+          Two: {
+            'Fn::GetAtt': 'defstr.arn'
+          }
+        },
         Three: 'zzz'
       }
     });
 
   t.deepEqual(references.length, 2);
-  t.deepEqual(_.difference(references.map(r => r.id), ['abc', 'def']).length, 0);
+  t.deepEqual(_.difference(references.map(r => r.id), ['abc', 'def', 'defstr']).length, 0);
 });
 
 test('should find Join references', t => {
