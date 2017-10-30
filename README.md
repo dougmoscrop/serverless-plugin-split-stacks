@@ -10,7 +10,7 @@ Migrating resources to nested stacks is tricky because some plugins rely on quer
 
 ## Stack mappings
 
-__Default stacks migrations map is configured at plugins `stacksMap` property, and it's default configuration can be seen in [lib/stacks-map.js](https://github.com/dougmoscrop/serverless-plugin-split-stacks/blob/master/lib/stacks-map.js)__
+__Default stacks migrations map is configured at plugin's constructor `stacksMap` property, and it's default configuration can be seen in [lib/stacks-map.js](https://github.com/dougmoscrop/serverless-plugin-split-stacks/blob/master/lib/stacks-map.js)__
 
 This map can be customized. To do so, introduce the `stacks-map.js` module in a root folder of your project (this module if exists will be transparently loaded by the plugin).
 
@@ -22,8 +22,19 @@ const stacksMap = require('serverless-plugin-split-stacks').stacksMap
 stacksMap['AWS::DynamoDB::Table'] = { destination: 'Dynamodb' };
 ```
 
-Additionally you may conditionally resolve `destination` by providing a _function_ instead of fixed string.
-It's useful where we want to conditionally distribute resources of same type among different stacks.
+If ability to customize _static_ stacks map is not enough, then it's possible to
+customize the `resolveMigration` function, one that resolves migration configuration on basis of each resource:
+
+```javascript
+const ServerlessPluginSplitStacks = require('serverless-plugin-split-stacks');
+
+ServerlessPluginSplitStacks.resolveMigration = function (resource, logicalId, serverless) {
+  if (logicalId.startsWith("Foo")) return { destination: 'Foo' };
+
+  // Fallback to default:
+  return this.stacksMap[resource.Type];
+};
+```
 
 e.g. in following example we distribute one of the `AWS::IAM::Role` resources into `Dynamodb` nested stacks
 
