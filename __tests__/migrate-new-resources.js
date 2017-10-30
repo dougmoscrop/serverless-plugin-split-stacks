@@ -12,6 +12,9 @@ test.beforeEach(t => {
 		constructor: {
 			stacksMap: {
 				'AWS::Logs::SubscriptionFilter': { destination: 'Filters', allowSuffix: true }
+			},
+			resolveMigration(resource) {
+				return this.stacksMap[resource.Type];
 			}
 		}
 	});

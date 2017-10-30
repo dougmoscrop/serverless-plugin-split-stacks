@@ -10,7 +10,12 @@ test.beforeEach(t => {
 		getStackName: name => `${name}NestedStack`,
 		getStackNameBase: name => `${name}NestedStack`,
 		migrate: sinon.stub(),
-		constructor: { stacksMap: { 'AWS::Test::Resource': { destination: 'Foo', allowSuffix: true } } }
+		constructor: {
+			stacksMap: { 'AWS::Test::Resource': { destination: 'Foo', allowSuffix: true } },
+			resolveMigration(resource) {
+				return this.stacksMap[resource.Type];
+			}
+		}
 	});
 	t.context.provider = {
 		naming: {

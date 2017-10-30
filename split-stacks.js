@@ -53,6 +53,10 @@ class ServerlessPluginSplitStacks {
     }
   }
 
+  static resolveMigration(resource) {
+    return this.stacksMap[resource.Type];
+  }
+
   split() {
     this.rootTemplate = this.serverless.service.provider.compiledCloudFormationTemplate;
     this.resourcesById = Object.assign({}, this.rootTemplate.Resources);
