@@ -8,7 +8,15 @@ const migrateNewResources = require('../lib/migrate-new-resources');
 test.beforeEach(t => {
 	t.context = Object.assign({ resourceMigrations: {} }, { migrateNewResources }, {
 		getStackName: () => 'test',
-		migrate: sinon.stub()
+		migrate: sinon.stub(),
+		constructor: {
+			stacksMap: {
+				'AWS::Logs::SubscriptionFilter': { destination: 'Filters', allowSuffix: true }
+			},
+			resolveMigration(resource) {
+				return this.stacksMap[resource.Type];
+			}
+		}
 	});
 });
 

@@ -1,8 +1,10 @@
 'use strict';
 
+const path = require('path');
 const _ = require('lodash');
 const semver = require('semver');
 
+const stacksMap = require('./lib/stacks-map');
 const migrateExistingResources = require('./lib/migrate-existing-resources');
 const migrateNewResources = require('./lib/migrate-new-resources');
 const replaceReferences = require('./lib/replace-references');
@@ -13,7 +15,7 @@ const logSummary = require('./lib/log-summary');
 
 const utils = require('./lib/utils');
 
-module.exports = class StackSplitter {
+class ServerlessPluginSplitStacks {
 
   constructor(serverless, options) {
     if (!semver.satisfies(serverless.version, '>= 1.13')) {
@@ -38,6 +40,21 @@ module.exports = class StackSplitter {
       { writeNestedStacks },
       { logSummary }
     );
+
+    // Load eventual stacks map customizations
+    const customizationsPath = path.resolve(serverless.config.servicePath, 'stacks-map.js');
+    try {
+      require(customizationsPath)
+    } catch (e) {
+      // If module not found ignore, otherwise crash
+      if (e.code !== 'MODULE_NOT_FOUND' || !e.message.endsWith(`'${customizationsPath}'`)) {
+        throw e;
+      }
+    }
+  }
+
+  static resolveMigration(resource) {
+    return this.stacksMap[resource.Type];
   }
 
   split() {
@@ -76,4 +93,8 @@ module.exports = class StackSplitter {
         }));
       });
   }
-};
+}
+
+ServerlessPluginSplitStacks.stacksMap = stacksMap;
+
+module.exports = ServerlessPluginSplitStacks;

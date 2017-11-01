@@ -7,8 +7,15 @@ const migrateExistingResources = require('../lib/migrate-existing-resources');
 
 test.beforeEach(t => {
 	t.context = Object.assign({ resourceMigrations: {} }, { migrateExistingResources }, {
-		getStackName: () => 'test',
-		migrate: sinon.stub()
+		getStackName: name => `${name}NestedStack`,
+		getStackNameBase: name => `${name}NestedStack`,
+		migrate: sinon.stub(),
+		constructor: {
+			stacksMap: { 'AWS::Test::Resource': { destination: 'Foo', allowSuffix: true } },
+			resolveMigration(resource) {
+				return this.stacksMap[resource.Type];
+			}
+		}
 	});
 	t.context.provider = {
 		naming: {
@@ -50,14 +57,15 @@ test('calls migrate when an existing resource still exists', t => {
 	t.context.getStackSummary = sinon.stub()
 		.onCall(0).resolves([{
 			ResourceType: 'AWS::CloudFormation::Stack',
-			PhysicalResourceId: 'some-nested-stack-id'
+			PhysicalResourceId: 'some-nested-stack-id',
+			LogicalResourceId: 'FooNestedStack'
 		}])
 		.onCall(1).resolves([{
 			ResourceType: 'AWS::Test::Resource',
 			LogicalResourceId: 'Foo'
 		}]);
 
-	t.context.resourcesById = { Foo: {}, Bar: {} };
+	t.context.resourcesById = { Foo: { Type: 'AWS::Test::Resource' }, Bar: {} };
 
 	return t.context.migrateExistingResources()
 		.then(() => {
