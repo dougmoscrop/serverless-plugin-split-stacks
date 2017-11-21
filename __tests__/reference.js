@@ -24,6 +24,15 @@ test('name uses logicalId', t => {
 	t.deepEqual(reference.getDependencyName(), 'foo');
 });
 
+test('name uses logicalId', t => {
+  const reference = new Reference('foo', {
+    value: 'test'
+  });
+
+	t.deepEqual(reference.getDependencyName(), 'foo');
+});
+
+
 test('name uses GetAtt', t => {
   const reference = new Reference('foo', {
     value: { 'Fn::GetAtt': ['foo', 'Attr'] }
