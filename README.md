@@ -36,19 +36,7 @@ ServerlessPluginSplitStacks.resolveMigration = function (resource, logicalId, se
 };
 ```
 
-e.g. in following example we distribute one of the `AWS::IAM::Role` resources into `Dynamodb` nested stacks
-
-```javascript
-stacksMap['AWS::IAM::Role'] = {
-	destination: (resourceName, resource) => {
-    if (resourceName === 'DynamodbAutoscalingRole') return 'Dynamodb';
-    return null;
-  },
-};
-
-```
-
-__Be careful when introducing any customizations to default config. Many kind of resources (as e.g. DynamoDB tables) cannot be freely moved between CloudFormation stacks__
+__Be careful when introducing any customizations to default config. Many kind of resources (as e.g. DynamoDB tables) cannot be freely moved between CloudFormation stacks (that can only be achieved via full removal and recreation of the stage)__
 
 ## Limitations
 
