@@ -56,7 +56,7 @@ __Be careful when introducing any customizations to default config. Many kind of
 
 If nested stack per lambda seems a right choice for your Serverless projects. This is a customization to consider.
 
-__Note: to switch from deafult serverless stack handling to nested stack per lambda approch will most likely require complete removal of a stage (stack) and new deployment with this configuration in. It's due to fact that CloudFormation (at this point) doesn't support move of resources between stacks.__
+__Note: Switch from default serverless stack handling to nested stack per lambda approach will most likely require complete removal of a stage (stack) and new deployment with this configuration in. It's due to fact that CloudFormation (at this point) doesn't support move of resources between stacks.__
 
 To load it configure `stacks-map.js` content as follows:
 
