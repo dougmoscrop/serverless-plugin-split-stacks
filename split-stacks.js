@@ -86,10 +86,7 @@ class ServerlessPluginSplitStacks {
             ContentType: 'application/json',
           };
 
-          return this.provider.request('S3', 'putObject',
-            params,
-            this.options.stage,
-            this.options.region);
+          return this.provider.request('S3', 'putObject', params);
         }));
       });
   }
