@@ -38,6 +38,21 @@ ServerlessPluginSplitStacks.resolveMigration = function (resource, logicalId, se
 
 __Be careful when introducing any customizations to default config. Many kind of resources (as e.g. DynamoDB tables) cannot be freely moved between CloudFormation stacks (that can only be achieved via full removal and recreation of the stage)__
 
+### Pre-configured customizations
+
+#### Nested stack per lambda
+
+If nested stack per lambda seems a right choice for your Serverless projects. This is a customization to consider.
+
+__Note: Switch from default serverless stack handling to nested stack per lambda approach will most likely require complete removal of a stage (stack) and new deployment with this configuration in. It's due to fact that CloudFormation (at this point) doesn't support move of resources between stacks.__
+
+To load it configure `stacks-map.js` content as follows:
+
+```javascript
+require('serverless-plugin-split-stacks/customizations/stack-per-lambda');
+
+```
+
 ## Limitations
 
 You should try to limit the number of functions you have in your service to 20 or so. This plugin is not a substitute for fine-grained services - but even with a domain of a single entity and sub-entity, CRUD operations on each and some stream listeners its easy to exceed 200 resources once monitoring is in place.
