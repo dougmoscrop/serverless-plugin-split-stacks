@@ -21,7 +21,7 @@ const getApiGatewayResourceMap = memoize(serverless => {
 	// Temporary map that helps to detect how many functions depend on given AWS::ApiGateway::Resource
 	// resources. It can be the case that more than one function depends on one resouce, in such case
 	// we keep resource in the main stack
-	const gatewayResourceLambdaMap = new Map();
+	const resourceLambdasMap = new Map();
 
 	// Iterate over all configured HTTP endpoints
 	apiGatewayPlugin.validated.events.map(({ functionName, http }) => {
@@ -48,16 +48,16 @@ const getApiGatewayResourceMap = memoize(serverless => {
 		http.path.split("/").forEach(token => {
 			tokens.push(token);
 			const resourceName = namingUtils.getResourceLogicalId(tokens.join("/"));
-			if (!gatewayResourceLambdaMap.has(resourceName)) {
-				gatewayResourceLambdaMap.set(resourceName, new Set());
+			if (!resourceLambdasMap.has(resourceName)) {
+				resourceLambdasMap.set(resourceName, new Set());
 			}
-			gatewayResourceLambdaMap.get(resourceName).add(normalizedLambdaName);
+			resourceLambdasMap.get(resourceName).add(normalizedLambdaName);
 		});
 	});
 
 	// Resolve all AWS::ApiGateway::Resource that map single function, only those will be moved to
 	// nested per lambda distributed stacks
-	gatewayResourceLambdaMap.forEach((normalizedFunctionNames, resourceName) => {
+	resourceLambdasMap.forEach((normalizedFunctionNames, resourceName) => {
 		if (normalizedFunctionNames.size > 1) return;
 		resourceMap.set(resourceName, normalizedFunctionNames.values().next().value);
 	});
