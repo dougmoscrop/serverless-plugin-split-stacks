@@ -18,9 +18,8 @@ const getApiGatewayResourceMap = memoize(serverless => {
 	// Result map: resource id to normalized function name
 	const resourceMap = new Map();
 
-	// Temporary map that helps to detect how many functions depend on given AWS::ApiGateway::Resource
-	// resources. It can be the case that more than one function depends on one resouce, in such case
-	// we keep resource in the main stack
+	// Temporary map that helps to detect how many functions depend on given resource.
+	// If there's more than one function then we keep the resource in main stack.
 	const resourceLambdasMap = new Map();
 
 	// Iterate over all configured HTTP endpoints
