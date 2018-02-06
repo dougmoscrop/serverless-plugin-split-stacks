@@ -36,6 +36,11 @@ const getApiGatewayResourceMap = memoize(serverless => {
 			),
 			normalizedLambdaName
 		);
+		// Ensure to support also OPTIONS method (mandatory for CORS support)
+		resourceMap.set(
+			namingUtils.getMethodLogicalId(apiGatewayPlugin.getResourceName(http.path), "OPTIONS"),
+			normalizedLambdaName
+		);
 
 		// Collect information about all AWS::ApiGateway::Resource resources that are needed for
 		// this endpoint
