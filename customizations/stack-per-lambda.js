@@ -18,10 +18,9 @@ const getApiGatewayResourceMap = memoize(serverless => {
 	// Result map: resource id to normalized function name
 	const resourceMap = new Map();
 
-	// Temporary map that helps to detect how many functions depend on given AWS::ApiGateway::Resource
-	// resources. It can be the case that more than one function depends on one resouce, in such case
-	// we keep resource in the main stack
-	const gatewayResourceLambdaMap = new Map();
+	// Temporary map that helps to detect how many functions depend on given resource.
+	// If there's more than one function then we keep the resource in main stack.
+	const resourceLambdasMap = new Map();
 
 	// Iterate over all configured HTTP endpoints
 	apiGatewayPlugin.validated.events.map(({ functionName, http }) => {
@@ -37,10 +36,12 @@ const getApiGatewayResourceMap = memoize(serverless => {
 			normalizedLambdaName
 		);
 		// Ensure to support also OPTIONS method (mandatory for CORS support)
-		resourceMap.set(
-			namingUtils.getMethodLogicalId(apiGatewayPlugin.getResourceName(http.path), "OPTIONS"),
-			normalizedLambdaName
+		const resourceName = namingUtils.getMethodLogicalId(
+			apiGatewayPlugin.getResourceName(http.path),
+			"OPTIONS"
 		);
+		if (!resourceLambdasMap.has(resourceName)) resourceLambdasMap.set(resourceName, new Set());
+		resourceLambdasMap.get(resourceName).add(normalizedLambdaName);
 
 		// Collect information about all AWS::ApiGateway::Resource resources that are needed for
 		// this endpoint
@@ -48,16 +49,16 @@ const getApiGatewayResourceMap = memoize(serverless => {
 		http.path.split("/").forEach(token => {
 			tokens.push(token);
 			const resourceName = namingUtils.getResourceLogicalId(tokens.join("/"));
-			if (!gatewayResourceLambdaMap.has(resourceName)) {
-				gatewayResourceLambdaMap.set(resourceName, new Set());
+			if (!resourceLambdasMap.has(resourceName)) {
+				resourceLambdasMap.set(resourceName, new Set());
 			}
-			gatewayResourceLambdaMap.get(resourceName).add(normalizedLambdaName);
+			resourceLambdasMap.get(resourceName).add(normalizedLambdaName);
 		});
 	});
 
 	// Resolve all AWS::ApiGateway::Resource that map single function, only those will be moved to
 	// nested per lambda distributed stacks
-	gatewayResourceLambdaMap.forEach((normalizedFunctionNames, resourceName) => {
+	resourceLambdasMap.forEach((normalizedFunctionNames, resourceName) => {
 		if (normalizedFunctionNames.size > 1) return;
 		resourceMap.set(resourceName, normalizedFunctionNames.values().next().value);
 	});
