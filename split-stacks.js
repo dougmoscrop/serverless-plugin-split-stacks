@@ -74,6 +74,8 @@ class ServerlessPluginSplitStacks {
   }
 
   upload() {
+    const deploymentBucketObject = this.serverless.service.provider.deploymentBucketObject;
+
     return this.provider.getServerlessDeploymentBucketName(this.options.stage, this.options.region)
       .then(deploymentBucket => {
         const files = this.getNestedStackFiles();
@@ -85,6 +87,11 @@ class ServerlessPluginSplitStacks {
             Body: file.createReadStream(),
             ContentType: 'application/json',
           };
+
+          if (deploymentBucket) {
+            const encryptionParams = this.getEncryptionParams(deploymentBucketObject);
+            Object.assign(params, encryptionParams);
+          }
 
           return this.provider.request('S3', 'putObject', params);
         }));
