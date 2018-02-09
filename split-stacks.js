@@ -88,7 +88,7 @@ class ServerlessPluginSplitStacks {
             ContentType: 'application/json',
           };
 
-          if (deploymentBucket) {
+          if (deploymentBucketObject) {
             const encryptionParams = this.getEncryptionParams(deploymentBucketObject);
             Object.assign(params, encryptionParams);
           }
