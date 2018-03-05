@@ -5,8 +5,8 @@ const test = require("ava");
 
 const StackSplitter = require("../split-stacks");
 
-const modesConfPath = resolve(__dirname, "../customizations");
-const modePaths = new Map([["lambda", resolve(modesConfPath, "stack-per-lambda.js")]]);
+const modesConfPath = resolve(__dirname, "../modes");
+const modePaths = new Map([["lambda", resolve(modesConfPath, "lambda.js")]]);
 
 test("resourceType", t => {
 	const serverless = {

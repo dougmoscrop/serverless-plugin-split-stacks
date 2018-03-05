@@ -91,4 +91,4 @@ const resolveMigration = (resource, logicalId, serverless) => {
 };
 
 module.exports = resolveMigration;
-require("../").resolveMigration = resolveMigration;
+require("..").resolveMigration = resolveMigration;

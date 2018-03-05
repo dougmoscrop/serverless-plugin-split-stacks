@@ -51,7 +51,7 @@ class ServerlessPluginSplitStacks {
 
 		const config = (this.serverless.service.custom || {}).splitStacks || {};
 		const mode = resolveMode(config.mode);
-		if (mode === 'lambda') require('./customizations/stack-per-lambda');
+		if (mode === 'lambda') require('./modes/lambda');
 
     // Load eventual stacks map customizations
     const customizationsPath = path.resolve(serverless.config.servicePath, 'stacks-map.js');
