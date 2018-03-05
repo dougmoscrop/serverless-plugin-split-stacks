@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
+require("..").stacksMap = {
   'AWS::CloudWatch::Alarm': {
     destination: 'Alarms',
     allowSuffix: true

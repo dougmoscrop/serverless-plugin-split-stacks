@@ -4,7 +4,6 @@ const path = require('path');
 const _ = require('lodash');
 const semver = require('semver');
 
-const stacksMap = require('./modes/safe-resource-type');
 const migrateExistingResources = require('./lib/migrate-existing-resources');
 const migrateNewResources = require('./lib/migrate-new-resources');
 const replaceReferences = require('./lib/replace-references');
@@ -111,6 +110,7 @@ class ServerlessPluginSplitStacks {
   }
 }
 
-ServerlessPluginSplitStacks.stacksMap = stacksMap;
-
 module.exports = ServerlessPluginSplitStacks;
+
+// Load default split stacks mode
+require('./modes/safe-resource-type');
