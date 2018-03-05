@@ -14,9 +14,9 @@ const logSummary = require('./lib/log-summary');
 
 const utils = require('./lib/utils');
 
-const supportedModes = new Set(['resourceType', 'lambda']);
+const supportedModes = new Set(['safeResourceType', 'lambda']);
 const resolveMode = mode => {
-	if (mode == null) return 'resourceType';
+	if (mode == null) return 'safeResourceType';
 	mode = String(mode);
 	if (supportedModes.has(mode)) return mode;
 	throw new Error(`Unsupported Split Stacks mode: ${ mode }`);
