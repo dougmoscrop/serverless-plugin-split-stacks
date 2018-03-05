@@ -15,6 +15,14 @@ const logSummary = require('./lib/log-summary');
 
 const utils = require('./lib/utils');
 
+const supportedModes = new Set(['resourceType', 'lambda']);
+const resolveMode = mode => {
+	if (mode == null) return 'resourceType';
+	mode = String(mode);
+	if (supportedModes.has(mode)) return mode;
+	throw new Error(`Unsupported Split Stacks mode: ${ mode }`);
+};
+
 class ServerlessPluginSplitStacks {
 
   constructor(serverless, options) {
@@ -40,6 +48,10 @@ class ServerlessPluginSplitStacks {
       { writeNestedStacks },
       { logSummary }
     );
+
+		const config = (this.serverless.service.custom || {}).splitStacks || {};
+		const mode = resolveMode(config.mode);
+		if (mode === 'lambda') require('./customizations/stack-per-lambda');
 
     // Load eventual stacks map customizations
     const customizationsPath = path.resolve(serverless.config.servicePath, 'stacks-map.js');
