@@ -4,7 +4,7 @@ const path = require('path');
 const _ = require('lodash');
 const semver = require('semver');
 
-const stacksMap = require('./lib/stacks-map');
+const stacksMap = require('./modes/safe-resource-type');
 const migrateExistingResources = require('./lib/migrate-existing-resources');
 const migrateNewResources = require('./lib/migrate-new-resources');
 const replaceReferences = require('./lib/replace-references');
