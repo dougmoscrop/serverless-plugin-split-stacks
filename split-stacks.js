@@ -1,6 +1,5 @@
 'use strict';
 
-const path = require('path');
 const _ = require('lodash');
 const semver = require('semver');
 
@@ -13,14 +12,6 @@ const writeNestedStacks = require('./lib/write-nested-stacks');
 const logSummary = require('./lib/log-summary');
 
 const utils = require('./lib/utils');
-
-const supportedModes = new Set(['safeResourceType', 'lambda']);
-const resolveMode = mode => {
-	if (mode == null) return 'safeResourceType';
-	mode = String(mode);
-	if (supportedModes.has(mode)) return mode;
-	throw new Error(`Unsupported Split Stacks mode: ${ mode }`);
-};
 
 class ServerlessPluginSplitStacks {
 
@@ -48,24 +39,9 @@ class ServerlessPluginSplitStacks {
       { logSummary }
     );
 
-		const config = (this.serverless.service.custom || {}).splitStacks || {};
-		const mode = resolveMode(config.mode);
-		if (mode === 'lambda') require('./modes/lambda');
+    const custom = this.serverless.service.custom || {};
 
-    // Load eventual stacks map customizations
-    const customizationsPath = path.resolve(serverless.config.servicePath, 'stacks-map.js');
-    try {
-      require(customizationsPath)
-    } catch (e) {
-      // If module not found ignore, otherwise crash
-      if (e.code !== 'MODULE_NOT_FOUND' || !e.message.endsWith(`'${customizationsPath}'`)) {
-        throw e;
-      }
-    }
-  }
-
-  static resolveMigration(resource) {
-    return this.stacksMap[resource.Type];
+    this.config = custom.splitStacks || {};
   }
 
   split() {
@@ -111,6 +87,3 @@ class ServerlessPluginSplitStacks {
 }
 
 module.exports = ServerlessPluginSplitStacks;
-
-// Load default split stacks mode
-require('./modes/safe-resource-type');
