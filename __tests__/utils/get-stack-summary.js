@@ -49,3 +49,26 @@ test('calls twice with NextToken', t => {
 			t.deepEqual(summary, ['a', 'b']);
 		});
 });
+
+test('retry on Rate exceeeded', t => {
+	const request = sinon.stub()
+		.onCall(0).rejects({
+			message: 'Rate exceeded'
+		})
+		.onCall(1).rejects({
+			message: 'Rate exceeded'
+		})
+		.onCall(2).resolves({
+			StackResourceSummaries: ['a']
+		});
+
+	t.context.provider = {
+		request
+	};
+
+	return t.context.getStackSummary('foo')
+		.then(summary => {
+			t.true(request.calledThrice);
+			t.deepEqual(summary, ['a']);
+		});
+});

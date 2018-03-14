@@ -37,7 +37,8 @@
   },
   "dependencies": {
     "lodash": "^4.17.4",
-    "semver": "^5.4.1"
+    "semver": "^5.4.1",
+    "throat": "^4.1.0"
   },
   "peerDependencies": {
     "serverless": "1"
