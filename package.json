@@ -36,6 +36,7 @@
     "sinon": "^3.3.0"
   },
   "dependencies": {
+    "batch-promises": "^0.0.3",
     "lodash": "^4.17.4",
     "semver": "^5.4.1"
   },
