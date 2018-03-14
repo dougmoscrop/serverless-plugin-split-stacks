@@ -6,6 +6,8 @@ plugins:
   - serverless-plugin-aws-alerts
 
 custom:
+  splitStacks:
+    perFunction: true
   alerts:
     stages:
       - dev
@@ -27,11 +29,18 @@ functions:
     events:
       - http:
           path: /
-          method: ANY
+          method: GET
   b:
     handler: handlers.b
     events:
       - s3: split-stacks-test-${self:provider.stage}-abc
+  c:
+    handler: handlers.a
+    role: customRole
+    events:
+      - http:
+          path: /
+          method: PUT
 
 resources:
   Resources:

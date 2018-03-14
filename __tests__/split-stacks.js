@@ -56,7 +56,7 @@ test('splits', t => {
 
   return splitter.split()
     .then(() => {
-      t.true(true);
+      t.pass();
     });
 });
 
@@ -91,4 +91,42 @@ test('throws if older serverless version is used', t => {
   });
 
   t.true(e.message.indexOf('requires serverless 1.13 or higher') > 0);
+});
+
+test('upload does not get encryption params if provider.deploymentBucketObject not set', t => {
+  const splitter = t.context.splitter;
+
+  const stub = splitter.getEncryptionParams = sinon.stub().returns({});
+
+  splitter.provider.getServerlessDeploymentBucketName = sinon.stub().resolves('test');
+  splitter.getNestedStackFiles = sinon.stub().returns([{
+    key: 'test',
+    createReadStream: sinon.stub()
+  }]);
+  splitter.provider.request = sinon.stub().resolves();
+
+  return splitter.upload()
+    .then(() => {
+      t.false(stub.calledOnce);
+    });
+});
+
+test('upload does get encryption params if provider.deploymentBucketObject set', t => {
+  t.context.serverless.service.provider.deploymentBucketObject = {};
+
+  const splitter = t.context.splitter;
+
+  const stub = splitter.getEncryptionParams = sinon.stub().returns({});
+
+  splitter.provider.getServerlessDeploymentBucketName = sinon.stub().resolves('test');
+  splitter.getNestedStackFiles = sinon.stub().returns([{
+    key: 'test',
+    createReadStream: sinon.stub()
+  }]);
+  splitter.provider.request = sinon.stub().resolves();
+
+  return splitter.upload()
+    .then(() => {
+      t.true(stub.calledOnce);
+    });
 });
