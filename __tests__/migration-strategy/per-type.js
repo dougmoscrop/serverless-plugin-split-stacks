@@ -1,6 +1,5 @@
 'use strict';
 
-const sinon = require('sinon');
 const test = require('ava');
 
 const PerType = require('../../lib/migration-strategy/per-type');
