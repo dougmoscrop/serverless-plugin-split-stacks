@@ -13,7 +13,13 @@ const logSummary = require('./lib/log-summary');
 
 const utils = require('./lib/utils');
 
+const legacyStacksMap = {};
+
 class ServerlessPluginSplitStacks {
+
+  static get stacksMap() {
+    return legacyStacksMap;
+  }
 
   constructor(serverless, options) {
     if (!semver.satisfies(serverless.version, '>= 1.13')) {

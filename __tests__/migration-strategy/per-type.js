@@ -3,6 +3,7 @@
 const test = require('ava');
 
 const PerType = require('../../lib/migration-strategy/per-type');
+const Plugin = require('../..');
 
 test('adds stacks-map that exists', t => {
   const plugin = {
@@ -69,4 +70,24 @@ test('throws when stacks-map does', t => {
   t.throws(() => {
     new PerType(plugin);
   });
+});
+
+test('non-exporting stacks map (legacy)', t => {
+  const serverless = {
+    version: '1.13.0',
+    config: {
+      servicePath: `${__dirname}/fixtures/no-export`
+    },
+    service: {
+      custom: {}
+    },
+    getProvider: () => {}
+  };
+
+  const plugin = new Plugin(serverless);
+
+  const strategy = new PerType(plugin);
+
+  t.deepEqual(strategy.migration({ Type: 'Test' }), {});
+  t.deepEqual(strategy.migration({ Type: 'AWS::ApiGateway::Resource' }), undefined);
 });
