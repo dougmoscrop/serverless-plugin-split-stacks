@@ -48,6 +48,7 @@ class ServerlessPluginSplitStacks {
     const custom = this.serverless.service.custom || {};
 
     this.config = custom.splitStacks || {};
+    this.stacksMap = ServerlessPluginSplitStacks.stacksMap;
   }
 
   split() {

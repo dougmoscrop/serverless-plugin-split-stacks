@@ -31,7 +31,7 @@ This plugin is not a substitute for fine-grained services - try to limit the siz
 
 If you create a file in the root of your Serverless project called `stacks-map.js` this plugin will load it.
 
-This file can customize a few things. 
+This file can customize a few things.
 
 ```javascript
 module.exports = {
