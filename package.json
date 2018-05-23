@@ -25,15 +25,14 @@
   },
   "homepage": "https://github.com/dougmoscrop/serverless-plugin-split-stacks#readme",
   "devDependencies": {
-    "ava": "^0.22.0",
-    "eslint": "^4.7.1",
-    "nyc": "^11.2.1",
-    "proxyquire": "^1.8.0",
-    "rewire": "^2.5.2",
-    "serverless": "^1.21.1",
+    "ava": "^0.25.0",
+    "eslint": "^4.19.1",
+    "nyc": "^11.8.0",
+    "proxyquire": "^2.0.1",
+    "serverless": "^1.27.3",
     "serverless-plugin-aws-alerts": "^1.2.3",
     "serverless-plugin-lambda-dead-letter": "^1.2.1",
-    "sinon": "^3.3.0"
+    "sinon": "^5.0.7"
   },
   "dependencies": {
     "lodash": "^4.17.4",
