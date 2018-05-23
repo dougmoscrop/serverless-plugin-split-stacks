@@ -15,6 +15,7 @@ test.beforeEach(t => {
 				servicePath: __dirname
 			}
 		},
+		provider: {},
 		getStackName: () => 'test',
 		migrate: sinon.stub()
 	});
