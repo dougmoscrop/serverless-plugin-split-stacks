@@ -51,8 +51,16 @@ test('name uses GetAtt string', t => {
 
 test('should remove non alphanumeric characters', t => {
   const reference = new Reference('foo', {
-    value: { 'Fn::GetAtt': ['Database', 'Endpoint.Port'] }
+    value: { 'Fn::GetAtt': ['Database', 'Endpoint>Port'] }
   });
 
   t.deepEqual(reference.getDependencyName(), 'DatabaseEndpointPort');
+})
+
+test('should replace from . to Dot', t => {
+  const reference = new Reference('foo', {
+    value: { 'Fn::GetAtt': ['Database', 'Endpoint.Port'] }
+  });
+
+  t.deepEqual(reference.getDependencyName(), 'DatabaseEndpointDotPort');
 })
