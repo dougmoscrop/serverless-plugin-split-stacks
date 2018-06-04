@@ -1,5 +1,8 @@
 __tests__
+.circleci
 .nyc_output
 coverage
+.editorconfig
 .eslintrc
 .gitignore
+*.log
