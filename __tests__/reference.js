@@ -55,12 +55,12 @@ test('should remove non alphanumeric characters', t => {
   });
 
   t.deepEqual(reference.getDependencyName(), 'DatabaseEndpointPort');
-})
+});
 
 test('should replace from . to Dot', t => {
   const reference = new Reference('foo', {
     value: { 'Fn::GetAtt': ['Database', 'Endpoint.Port'] }
   });
 
-  t.deepEqual(reference.getDependencyName(), 'DatabaseEndpointDotPort');
-})
+  t.deepEqual(reference.getDependencyName(), 'DatabaseEndpointPort');
+});
