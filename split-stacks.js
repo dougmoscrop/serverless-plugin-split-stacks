@@ -6,6 +6,7 @@ const semver = require('semver');
 const migrateExistingResources = require('./lib/migrate-existing-resources');
 const migrateNewResources = require('./lib/migrate-new-resources');
 const replaceReferences = require('./lib/replace-references');
+const replaceConditions = require('./lib/replace-conditions');
 const replaceOutputs = require('./lib/replace-outputs');
 const mergeStackResources = require('./lib/merge-stack-resources');
 const writeNestedStacks = require('./lib/write-nested-stacks');
@@ -33,6 +34,7 @@ class ServerlessPluginSplitStacks {
       { migrateExistingResources },
       { migrateNewResources },
       { replaceReferences },
+      { replaceConditions },
       { replaceOutputs },
       { mergeStackResources },
       { writeNestedStacks },
@@ -56,6 +58,7 @@ class ServerlessPluginSplitStacks {
       .then(() => this.migrateNewResources())
       .then(() => this.replaceReferences())
       .then(() => this.replaceOutputs())
+      .then(() => this.replaceConditions())
       .then(() => this.mergeStackResources())
       .then(() => this.writeNestedStacks())
       .then(() => this.logSummary());

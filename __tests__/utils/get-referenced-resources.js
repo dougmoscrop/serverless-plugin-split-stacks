@@ -135,3 +135,19 @@ test('should find Join references', t => {
   t.deepEqual(references.length, 2);
   t.deepEqual(_.difference(references.map(r => r.id), ['abc', 'def']).length, 0);
 });
+
+test('should find Fn::Equals references', t => {
+  t.context.resourcesById = {
+    'abc': {},
+    'def': {},
+    'nope': {}
+  };
+
+  const references = t.context.getReferencedResources({
+      SomeCondition: {
+        'Fn::Equals': ['foo', { Ref: 'abc' }]
+      }
+    });
+
+  t.deepEqual(references.map(r => r.id), ['abc']);
+});

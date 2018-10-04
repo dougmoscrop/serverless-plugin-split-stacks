@@ -7,7 +7,8 @@ plugins:
 
 custom:
   splitStacks:
-    perFunction: true
+    perType: true
+    perFunction: false
   alerts:
     stages:
       - dev
@@ -43,14 +44,60 @@ functions:
           method: PUT
 
 resources:
+  Conditions:
+    TrueCondition:
+      Fn::Equals:
+        - foo
+        - foo
+    FalseCondition:
+      Fn::Equals:
+        - foo
+        - bar
+
   Resources:
+    SomePermission:
+      Type: AWS::Lambda::Permission
+      Condition: TrueCondition
+      Properties:
+        FunctionName:
+          Ref: BLambdaFunction
+        Action: lambda:InvokeFunction
+        Principal:
+          Fn::Join:
+            - ""
+            - - "s3."
+              - Ref:
+                  AWS::URLSuffix
+        SourceArn:
+          Fn::GetAtt:
+            - ServerlessDeploymentBucket
+            - Arn
+
+    SomeOtherPermission:
+      Type: AWS::Lambda::Permission
+      Condition: FalseCondition
+      Properties:
+        FunctionName:
+          Ref: BLambdaFunction
+        Action: lambda:InvokeFunction
+        Principal:
+          Fn::Join:
+            - ""
+            - - "s3."
+              - Ref:
+                  AWS::URLSuffix
+        SourceArn:
+          Fn::GetAtt:
+            - ServerlessDeploymentBucket
+            - Arn
+
     customRole:
       Type: AWS::IAM::Role
       Properties:
         RoleName: role1
         Path: "/"
         AssumeRolePolicyDocument:
-          Version: '2012-10-17'
+          Version: "2012-10-17"
           Statement:
             - Effect: Allow
               Principal:
