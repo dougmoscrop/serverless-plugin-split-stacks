@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-split-stacks",
-  "version": "1.5.5",
+  "version": "1.6.0",
   "description": "Split Serverless deployments in to nested CloudFormation stacks",
   "main": "split-stacks.js",
   "scripts": {
@@ -46,8 +46,8 @@
     "serverless": "1"
   },
   "contributors": [
-    "Doug Moscrop (https://github.com/dougmoscrop)",
-    "Mariusz Nowak (https://github.com/medikoo)",
-    "Tiago de Assis Gonçalves (https://github.com/legiao)"
+    "",
+    "",
+    ""
   ]
 }
