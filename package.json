@@ -6,7 +6,6 @@
   "scripts": {
     "coverage": "nyc --all npm test",
     "lint": "eslint .",
-    "preversion": "update-contrib",
     "postpublish": "git push origin master --tags",
     "test": "ava",
     "integration-test": "node __tests__/_integration.js"
@@ -28,26 +27,20 @@
   "homepage": "https://github.com/dougmoscrop/serverless-plugin-split-stacks#readme",
   "devDependencies": {
     "ava": "^0.25.0",
-    "eslint": "^4.19.1",
-    "nyc": "^11.8.0",
-    "proxyquire": "^2.0.1",
-    "serverless": "^1.27.3",
+    "eslint": "^5.7.0",
+    "nyc": "^13.1.0",
+    "proxyquire": "^2.1.0",
+    "serverless": "^1.32.0",
     "serverless-plugin-aws-alerts": "^1.2.3",
     "serverless-plugin-lambda-dead-letter": "^1.2.1",
-    "sinon": "^5.0.7",
-    "update-contributors": "^0.3.1"
+    "sinon": "^7.0.0"
   },
   "dependencies": {
-    "lodash": "^4.17.4",
-    "semver": "^5.4.1",
+    "lodash": "^4.17.5",
+    "semver": "^5.6.0",
     "throat": "^4.1.0"
   },
   "peerDependencies": {
     "serverless": "1"
-  },
-  "contributors": [
-    "",
-    "",
-    ""
-  ]
+  }
 }
