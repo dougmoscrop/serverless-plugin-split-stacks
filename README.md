@@ -4,7 +4,7 @@
 
 This plugin migrates CloudFormation resources in to nested stacks in order to work around the 200 resource limit.
 
-There are built-in migration strategies that can be turned on or off as well as defining your own custom migrations. You configure this in your `serverless.yml` (defaults shown):
+There are built-in migration strategies that can be turned on or off as well as defining your own custom migrations. It is a good idea to select the best strategy for your needs from the start because the only reliable method of changing strategy later on is to recreate the deployment from scratch. You configure this in your `serverless.yml` (defaults shown):
 
 ```yaml
 custom:
