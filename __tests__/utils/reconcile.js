@@ -66,7 +66,7 @@ test('handles resource and dependency migration', t => {
 	t.true(ResourceAndDependencyMigrated.called);
 });
 
-test('handles resource and dependency migration', t => {
+test('handles resource and dependency migration in same stack', t => {
 	t.context.resourceMigrations.foo = { stackName: 'A' };
 	t.context.resourceMigrations.bar = { stackName: 'A' };
 

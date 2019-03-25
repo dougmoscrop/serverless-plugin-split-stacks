@@ -16,7 +16,7 @@ test('can replace value', t => {
 	t.deepEqual(parent.test, 'x');
 });
 
-test('name uses logicalId', t => {
+test('name uses logicalId with Ref', t => {
   const reference = new Reference('foo', {
     value: { Ref: 'foo' }
   });
