@@ -189,3 +189,23 @@ test('static map and exported function', t => {
   t.deepEqual(strategy.migration({ Type: 'Foo::Bar' }, 'Foo'), { destination: 'Foo' });
   t.deepEqual(strategy.migration({ Type: 'Bar' }, 'asdf'), { destination: 'Bar' });
 });
+
+test('ignoring just a few resource', t => {
+  const serverless = {
+    version: '1.13.0',
+    config: {
+      servicePath: `${__dirname}/fixtures/working-fn`
+    },
+    service: {
+      custom: {}
+    },
+    getProvider: () => {}
+  };
+
+  Plugin.resolveMigration = sinon.stub().returns(false);
+
+  const plugin = new Plugin(serverless);
+  const strategy = new Custom(plugin);
+
+  t.deepEqual(strategy.migration({ Type: 'Foo::Bar' }, 'Foo'), false);
+});
