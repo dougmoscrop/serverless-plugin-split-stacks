@@ -40,13 +40,10 @@ module.exports = {
 ```
 
 ```javascript
-const ServerlessPluginSplitStacks = require('serverless-plugin-split-stacks');
-
-ServerlessPluginSplitStacks.resolveMigration = function (resource, logicalId, serverless) {
+module.exports = (resource, logicalId) => {
   if (logicalId.startsWith("Foo")) return { destination: 'Foo' };
 
-  // Fallback to default:
-  return this.stacksMap[resource.Type];
+  // Falls back to default
 };
 ```
 
