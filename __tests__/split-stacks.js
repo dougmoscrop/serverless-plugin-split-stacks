@@ -11,6 +11,7 @@ test.beforeEach(t => {
     version: '1.13.2',
     service: {
       provider: {
+        region: 'us-east-1',
         compiledCloudFormationTemplate: sampleTemplate
       },
       package: {}

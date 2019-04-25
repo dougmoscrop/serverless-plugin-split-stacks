@@ -7,6 +7,7 @@ const utils = require('../../lib/utils');
 
 test.beforeEach(t => {
 	t.context = Object.assign({}, utils, {
+		deploymentBucketEndpoint: 's3.amazonaws.com',
 		serverless: {
 			service: {
 				provider: {},

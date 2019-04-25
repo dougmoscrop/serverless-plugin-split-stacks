@@ -36,6 +36,7 @@
     "sinon": "^7.3.0"
   },
   "dependencies": {
+    "aws-info": "^1.0.0",
     "lodash": "^4.17.5",
     "semver": "^5.6.0",
     "throat": "^4.1.0"
