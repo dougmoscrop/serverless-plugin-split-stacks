@@ -9,6 +9,9 @@ const sampleTemplate = require('./fixtures/sample-template.json');
 test.beforeEach(t => {
   t.context.serverless = {
     version: '1.13.2',
+    utils: {
+      readFileSync: path => require(path)
+    },
     service: {
       provider: {
         compiledCloudFormationTemplate: sampleTemplate

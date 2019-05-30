@@ -14,6 +14,9 @@ test.beforeEach(() => {
 test.serial('uses static resolveMigration', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/__does_not_exist__`
     },
@@ -25,7 +28,7 @@ test.serial('uses static resolveMigration', t => {
 
   const plugin = new Plugin(serverless);
   const strategy = new Custom(plugin);
-  
+
   Plugin.resolveMigration = sinon.stub().returns({ destination: 'foo' });
 
   t.deepEqual(strategy.migration({ Type: 'Foo::Bar' }), { destination: 'foo' });
@@ -36,6 +39,9 @@ test.serial('uses static resolveMigration', t => {
 test.serial('adds static stacks-map', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/no-export`
     },
@@ -47,16 +53,19 @@ test.serial('adds static stacks-map', t => {
 
   const plugin = new Plugin(serverless);
   const strategy = new Custom(plugin);
-  
+
   t.deepEqual(strategy.migration({ Type: 'Foo::Bar' }), undefined);
   t.deepEqual(strategy.migration({ Type: 'Test' }), {});
   t.deepEqual(strategy.migration({ Type: 'AWS::CloudWatch::Alarm' }), undefined);
-  
+
 });
 
 test.serial('handles non-existing stacks-map', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/__does_not_exist__`
     },
@@ -68,13 +77,42 @@ test.serial('handles non-existing stacks-map', t => {
 
   const plugin = new Plugin(serverless);
   const strategy = new Custom(plugin);
-  
+
   t.deepEqual(strategy.migration({ Type: 'AWS::CloudWatch::Alarm' }), undefined);
 });
+
+test.serial('handles custom stacks-map location', t => {
+  const serverless = {
+    version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
+    config: {
+      servicePath: `${__dirname}/fixtures/working`
+    },
+    service: {
+      custom: {
+        splitStacks: {
+          custom: 'nested/custom-stacks-map.js'
+        }
+      }
+    },
+    getProvider: () => {}
+  };
+
+  const plugin = new Plugin(serverless);
+  const strategy = new Custom(plugin);
+
+  t.deepEqual(strategy.migration({ Type: 'AWS::CloudWatch::Alarm' }), { destination: 'Custom2' });
+});
+
 
 test('throws when stacks-map does', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/throwing`
     },
@@ -96,6 +134,9 @@ test('throws when stacks-map does', t => {
 test('non-exporting stacks map (legacy)', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/__does_not_exist__`
     },
@@ -114,6 +155,9 @@ test('non-exporting stacks map (legacy)', t => {
 test('exports a map', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/working`
     },
@@ -134,6 +178,9 @@ test('exports a map', t => {
 test('exports a function', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/working-fn`
     },
@@ -152,6 +199,9 @@ test('exports a function', t => {
 test('exports a function and has static stuff', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/working-fn`
     },
@@ -172,6 +222,9 @@ test('exports a function and has static stuff', t => {
 test('static map and exported function', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/working-fn`
     },
@@ -193,6 +246,9 @@ test('static map and exported function', t => {
 test('ignoring just a few resource', t => {
   const serverless = {
     version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
     config: {
       servicePath: `${__dirname}/fixtures/working-fn`
     },

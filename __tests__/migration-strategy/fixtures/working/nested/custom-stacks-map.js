@@ -2,7 +2,7 @@
 
 module.exports = {
   'AWS::CloudWatch::Alarm': {
-    destination: 'Custom'
+    destination: 'Custom2'
   },
   'Foo::Bar': {}
 };
