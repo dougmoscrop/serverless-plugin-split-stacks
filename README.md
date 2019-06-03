@@ -11,6 +11,7 @@ custom:
   splitStacks:
     perFunction: false
     perType: true
+    perGroupFunction: false
 ```
 
 ## Migration Strategies
@@ -22,6 +23,37 @@ This splits resources off in to a nested stack dedicated to the associated Lambd
 ### Per Type
 
 This moves resources in to a nested stack for the given resource type. If `Per Lambda` is enabled, it takes precedence over `Per Type`.
+
+### Per Lambda Group
+
+This splits resources off in to a nested stack dedicated to a set of Lambda functions and associated resources. The resources within the nested stack are declared as depending on each others to avoid the `API rate limit` error due to fast deployments. If `Per Lambda` or `Per Type` is enabled, it takes precedence over `Per Lambda Group`. In order to control the number of nested stacks, more configurations are needed:
+
+```yaml
+custom:
+  splitStacks:
+    nestedStackCount: 20 # Controls the number of created nested stacks
+    perFunction: false
+    perType: false
+    perGroupFunction: true
+    resourceParallelDeployments: 10 # Controls how much resources are deployed in parallel
+```
+
+Once set, the `nestedStackCount` configuration should never be changed because the only reliable method of changing it later on is to recreate the deployment from scratch.
+
+## Stack Sequences
+
+In order to avoid `API rate limit` errors, it is possible to configure nested stacks to depend on each others. This feature comes with a new set of configuration:
+
+
+```yaml
+custom:
+  splitStacks:
+    perFunction: true
+    perType: false
+    perGroupFunction: false
+    stackSequence: true
+    stackParallelDeployments: 5 # Controls how much stacks are deployed in parallel
+```
 
 ## Limitations
 

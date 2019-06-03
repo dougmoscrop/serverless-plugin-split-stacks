@@ -9,6 +9,7 @@ const replaceReferences = require('./lib/replace-references');
 const replaceConditions = require('./lib/replace-conditions');
 const replaceOutputs = require('./lib/replace-outputs');
 const mergeStackResources = require('./lib/merge-stack-resources');
+const sequenceStacks = require('./lib/sequence-stacks');
 const writeNestedStacks = require('./lib/write-nested-stacks');
 const logSummary = require('./lib/log-summary');
 
@@ -37,6 +38,7 @@ class ServerlessPluginSplitStacks {
       { replaceConditions },
       { replaceOutputs },
       { mergeStackResources },
+      { sequenceStacks },
       { writeNestedStacks },
       { logSummary }
     );
@@ -60,6 +62,7 @@ class ServerlessPluginSplitStacks {
       .then(() => this.replaceOutputs())
       .then(() => this.replaceConditions())
       .then(() => this.mergeStackResources())
+      .then(() => this.sequenceStacks())
       .then(() => this.writeNestedStacks())
       .then(() => this.logSummary());
   }
