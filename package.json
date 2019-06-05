@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-split-stacks",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "Split Serverless deployments in to nested CloudFormation stacks",
   "main": "split-stacks.js",
   "scripts": {
