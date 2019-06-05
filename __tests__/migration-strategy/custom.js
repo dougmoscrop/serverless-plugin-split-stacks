@@ -265,3 +265,26 @@ test('ignoring just a few resource', t => {
 
   t.deepEqual(strategy.migration({ Type: 'Foo::Bar' }, 'Foo'), false);
 });
+
+test('ignoring via custom function', t => {
+  const serverless = {
+    version: '1.13.0',
+    utils: {
+      readFileSync: path => require(path)
+    },
+    config: {
+      servicePath: `${__dirname}/fixtures/working-fn`
+    },
+    service: {
+      custom: {}
+    },
+    getProvider: () => {}
+  };
+
+  Plugin.resolveMigration = sinon.stub().returns();
+
+  const plugin = new Plugin(serverless);
+  const strategy = new Custom(plugin);
+
+  t.deepEqual(strategy.migration({ Type: 'Foo::Bar' }, 'Skip'), false);
+});
