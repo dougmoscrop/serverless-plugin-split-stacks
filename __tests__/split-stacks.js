@@ -14,6 +14,7 @@ test.beforeEach(t => {
     },
     service: {
       provider: {
+        region: 'us-east-1',
         compiledCloudFormationTemplate: sampleTemplate
       },
       package: {}
