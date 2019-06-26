@@ -31,7 +31,7 @@ This plugin is not a substitute for fine-grained services - try to limit the siz
 
 If you create a file in the root of your Serverless project called `stacks-map.js` this plugin will load it.
 
-This file can customize a few things.
+This file can customize migrations, either by exporting a simple map of resource type to migration, or a function that ca have whatever logic you want.
 
 ```javascript
 module.exports = {
@@ -48,3 +48,7 @@ module.exports = (resource, logicalId) => {
 ```
 
 __Be careful when introducing any customizations to default config. Many kind of resources (as e.g. DynamoDB tables) cannot be freely moved between CloudFormation stacks (that can only be achieved via full removal and recreation of the stage)__
+
+### Force Migration
+
+Custom migrations can specify `{ force: true }` to force the migration of an existing resource in to a new stack. BE CAREFUL. This will cause a resource to be deleted and recreated. It may not even work if CloudFormation tries to create the new one before deleting the old one and they have a name or some other unique property that cannot have two resources existing at the same time. It can also mean a small window of downtime during this period, for example as an `AWS::Lambda::Permission` is deleted/recreated calls may be denied until IAM sorts things out.
