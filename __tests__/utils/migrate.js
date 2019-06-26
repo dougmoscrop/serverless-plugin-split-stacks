@@ -43,7 +43,8 @@ test('should throw if you try to migrate a resource that was already migrated', 
 	t.context.resourceMigrations.foo = {};
 	t.context.rootTemplate.Resources = { foo };
 
-	t.throws(() => t.context.migrate('foo', 'Baz'));
+  const err = t.throws(() => t.context.migrate('foo', 'Baz'));
+  t.is(err.message, 'foo was already migrated');
 });
 
 test('should throw if you try to migrate a resource that does not exist', t => {
@@ -53,4 +54,25 @@ test('should throw if you try to migrate a resource that does not exist', t => {
 	t.context.rootTemplate.Resources = { foo };
 
 	t.throws(() => t.context.migrate('baz', 'Baz'));
+});
+
+test('should not throw if you force migrate a resource that was already migrated', t => {
+	const foo = {};
+
+  const ExistingStack = {
+    Resources: {
+      foo,
+    }
+  };
+
+	t.context.resourcesById = { foo };
+	t.context.resourceMigrations.foo = {
+    stack: ExistingStack
+  };
+	t.context.rootTemplate.Resources = { foo };
+
+  t.context.migrate('foo', 'ForcedStack', true);
+
+  t.deepEqual(ExistingStack.Resources, {});
+  t.deepEqual(t.context.resourceMigrations.foo.stackName, 'ForcedStack');
 });

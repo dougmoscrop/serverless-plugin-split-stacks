@@ -17,7 +17,7 @@ test.beforeEach(t => {
     './migration-strategy/custom': StubMigration
   });
 
-	t.context = Object.assign({ resourceMigrations: {} }, { migrateNewResources }, {
+	t.context = Object.assign({ resourceMigrations: {}, migrateNewResources, existingResources: {} }, {
 		config: {
 			perType: true
 		},
@@ -47,8 +47,8 @@ test('calls migrate for matching resources', t => {
 	t.true(t.context.migrate.calledOnce);
 });
 
-test('does not call migrate for already migrated resources', t => {
-	t.context.resourceMigrations.Bar = {};
+test('does not call migrate for existing resources', t => {
+  t.context.existingResources.Bar = {};
 	t.context.resourcesById = {
 		Foo: {
 			Type: 'AWS::Logs::SubscriptionFilter'
