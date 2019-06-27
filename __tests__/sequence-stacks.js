@@ -67,7 +67,7 @@ test.beforeEach(t => {
 });
 
 test('does nothing if parallelDeployments is disabled', t => {
-  t.context.config.stackSequence = false;
+  t.context.config.stackConcurrency = 0;
 
   t.context.sequenceStacks();
 
@@ -75,7 +75,7 @@ test('does nothing if parallelDeployments is disabled', t => {
 });
 
 test('creates a single nested stack chain if enabled without parallel deployments', t => {
-  t.context.config.stackSequence = true;
+  t.context.config.stackConcurrency = 1;
 
   t.context.sequenceStacks();
 
@@ -84,7 +84,7 @@ test('creates a single nested stack chain if enabled without parallel deployment
 });
 
 test('keeps already existing dependsOn directives', t => {
-  t.context.config.stackSequence = true;
+  t.context.config.stackConcurrency = 1;
   t.context.rootTemplate.Resources['9NestedStack'].DependsOn = ['Foo'];
 
   t.context.sequenceStacks();
@@ -95,8 +95,7 @@ test('keeps already existing dependsOn directives', t => {
 });
 
 test('creates multiple nested stack chains if enabled with parallel deployments', t => {
-  t.context.config.stackSequence = true;
-  t.context.config.stackParallelDeployments = 3;
+  t.context.config.stackConcurrency = 3;
 
   t.context.sequenceStacks();
 

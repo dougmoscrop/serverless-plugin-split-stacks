@@ -26,7 +26,7 @@ This moves resources in to a nested stack for the given resource type. If `Per L
 
 ### Per Lambda Group
 
-This splits resources off in to a nested stack dedicated to a set of Lambda functions and associated resources. The resources within the nested stack are declared as depending on each others to avoid the `API rate limit` error due to fast deployments. If `Per Lambda` or `Per Type` is enabled, it takes precedence over `Per Lambda Group`. In order to control the number of nested stacks, more configurations are needed:
+This splits resources off in to a nested stack dedicated to a set of Lambda functions and associated resources. If `Per Lambda` or `Per Type` is enabled, it takes precedence over `Per Lambda Group`. In order to control the number of nested stacks, following configurations are needed:
 
 ```yaml
 custom:
@@ -35,14 +35,17 @@ custom:
     perFunction: false
     perType: false
     perGroupFunction: true
-    resourceParallelDeployments: 10 # Controls how much resources are deployed in parallel
 ```
 
 Once set, the `nestedStackCount` configuration should never be changed because the only reliable method of changing it later on is to recreate the deployment from scratch.
 
-## Stack Sequences
+## Concurrency
 
-In order to avoid `API rate limit` errors, it is possible to configure nested stacks to depend on each others. This feature comes with a new set of configuration:
+In order to avoid `API rate limit` errors, it is possible to configure the plugin in 2 different ways:
+ * Set nested stacks to depend on each others.
+ * Set resources in the nested stack to depend on each others.
+
+This feature comes with a 2 new configurations, `stackConcurrency` and `resourceConcurrency` :
 
 
 ```yaml
@@ -51,8 +54,8 @@ custom:
     perFunction: true
     perType: false
     perGroupFunction: false
-    stackSequence: true
-    stackParallelDeployments: 5 # Controls how much stacks are deployed in parallel
+    stackConcurrency: 5 # Controls if enabled and how much stacks are deployed in parallel. Disabled if absent.
+    resourceConcurrency: 10 # Controls how much resources are deployed in parallel. Disabled if absent.
 ```
 
 ## Limitations

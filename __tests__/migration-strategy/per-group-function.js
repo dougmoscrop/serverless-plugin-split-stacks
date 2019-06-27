@@ -128,10 +128,10 @@ test('migrates resources in Nested Stacks', t => {
   });
 });
 
-test('migrates resources in Nested Stacks and ', t => {
+test('migrates resources in Nested Stacks and with resource concurrency', t => {
   t.context.plugin.config.perGroupFunction = true;
   t.context.plugin.config.nestedStackCount = 2;
-  t.context.plugin.config.resourceParallelDeployments = 2;
+  t.context.plugin.config.resourceConcurrency = 2;
   t.plan(22);
 
   const migrationStrategy = new PerGroupFunction(t.context.plugin);
