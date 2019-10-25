@@ -87,3 +87,33 @@ test('sets bucket endpoint to service region when deploymentBucket is not set', 
       t.deepEqual(t.context.deploymentBucketEndpoint, 's3.us-east-2.amazonaws.com');
     });
 });
+
+test('sets bucket region to region from options if region is missing', t => {
+  const setDeploymentBucketEndpoint = require('../../lib/deployment-bucket-endpoint');
+
+  t.context.serverless.service.provider.deploymentBucket = 'danyel-test2';
+  t.context.options = { region: 'eu-west-1' };
+
+  const request = {};
+
+  request.on = sinon.fake.returns(undefined);
+  request.end = sinon.fake.returns(undefined);
+  https.request = sinon.fake.returns(request);
+  const promise = setDeploymentBucketEndpoint.apply(t.context, []);
+
+  // assert called
+  t.true(https.request.calledOnce);
+  t.true(request.on.calledWith('response'));
+  t.true(request.on.calledWith('error'));
+  t.true(request.end.calledOnce);
+
+  // invoke fake response
+  const responseCall = request.on.getCalls().find(e => e.args[0] === 'response');
+  const callback = responseCall.args[1];
+  callback({ headers: { } });
+  return promise.then(() => {
+      t.deepEqual(t.context.deploymentBucketEndpoint, 's3.eu-west-1.amazonaws.com');
+    });
+});
+
+
