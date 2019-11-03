@@ -82,6 +82,13 @@ module.exports = (resource, logicalId) => {
 };
 ```
 
+You can also point to your custom splitter from the `custom` block in your serverless file:
+```
+custom:
+  splitStacks:
+    custom: path/to/your/splitter.js
+```
+
 __Be careful when introducing any customizations to default config. Many kind of resources (as e.g. DynamoDB tables) cannot be freely moved between CloudFormation stacks (that can only be achieved via full removal and recreation of the stage)__
 
 ### Force Migration
