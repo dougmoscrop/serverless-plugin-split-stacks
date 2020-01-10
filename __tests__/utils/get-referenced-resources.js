@@ -136,6 +136,38 @@ test('should find Join references', t => {
   t.deepEqual(_.difference(references.map(r => r.id), ['abc', 'def']).length, 0);
 });
 
+test('should find Sub references', t => {
+  t.context.resourcesById = {
+    'domain': {},
+    'vpc': {},
+    'table': {},
+    'nope': {},
+  };
+
+  const references = t.context.getReferencedResources({
+    Foo: {
+      Mapping: {
+        'Fn::Sub': ['www.${Domain}', {Domain: {Ref: "domain"}}],
+      },
+      noMapping: {
+        Ref: {
+          'Fn::Sub': 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/${vpc}',
+        },
+        Att: {
+          'Fn::Sub': '${table.Arn}',
+        },
+      },
+      Literal: {
+        'Fn::Sub': '${!nope}',
+      },
+      none: 'zzz',
+    },
+  });
+
+  t.deepEqual(references.length, 3);
+  t.deepEqual(_.difference(references.map(r => r.id), ['domain', 'vpc', 'table']).length, 0);
+});
+
 test('should find Fn::Equals references', t => {
   t.context.resourcesById = {
     'abc': {},
