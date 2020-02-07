@@ -6,6 +6,7 @@ provider:
 plugins:
   - serverless-plugin-split-stacks
   - serverless-plugin-aws-alerts
+  - serverless-iam-roles-per-function
 
 custom:
   splitStacks:
