@@ -40,8 +40,5 @@
     "lodash": "^4.17.15",
     "semver": "^6.3.0",
     "throat": "^5.0.0"
-  },
-  "peerDependencies": {
-    "serverless": "1"
   }
 }
