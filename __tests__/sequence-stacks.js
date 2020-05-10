@@ -102,3 +102,66 @@ test('creates multiple nested stack chains if enabled with parallel deployments'
   t.is(7, countDependsOn(t.context.rootTemplate.Resources));
   t.true(doesNotBecomeCircular(t.context.rootTemplate.Resources));
 });
+
+test('throws an error if both dependsOn and stackConcurrency are defined', t => {
+  t.context.config.dependsOn = {
+    '1NestedStack': '2NestedStack'
+  };
+  t.context.config.stackConcurrency = 3;
+
+  t.throws(() => t.context.sequenceStacks(), {
+    message: 'Both stackConcurrency and dependsOn are set. Please set only one of these options'
+  })
+});
+
+test('check for existance of the parent stack if dependsOn config is set', t => {
+  t.context.config.dependsOn = {
+    '1DoesNotExist': '2NestedStack'
+  };
+
+  t.throws(() => t.context.sequenceStacks(), {
+    message: 'dependsOn config: Nested stack 1DoesNotExist not found'
+  })
+});
+
+test('check for existance of the child stack if dependsOn config is set', t => {
+  t.context.config.dependsOn = {
+    '1NestedStack': '2DoesNotExist'
+  };
+
+  t.throws(() => t.context.sequenceStacks(), {
+    message: 'dependsOn config: Nested stack 2DoesNotExist not found'
+  })
+});
+
+test('set DependsOn in the resource if dependsOn config is set', t => {
+  t.context.config.dependsOn = {
+    '1NestedStack': '3NestedStack'
+  };
+
+  t.context.sequenceStacks()
+
+  t.deepEqual(['3NestedStack'], t.context.rootTemplate.Resources['1NestedStack'].DependsOn);
+});
+
+test('keeps already existing dependsOn directives if dependsOn config is set', t => {
+  t.context.config.dependsOn = {
+    '1NestedStack': '3NestedStack'
+  };
+  t.context.rootTemplate.Resources['1NestedStack'].DependsOn = ['Foo'];
+
+  t.context.sequenceStacks();
+
+  t.deepEqual(['Foo', '3NestedStack'], t.context.rootTemplate.Resources['1NestedStack'].DependsOn);
+});
+
+test('should not duplicate dependsOn directives', t => {
+  t.context.config.dependsOn = {
+    '1NestedStack': '2NestedStack'
+  };
+  t.context.rootTemplate.Resources['1NestedStack'].DependsOn = ['2NestedStack'];
+
+  t.context.sequenceStacks();
+
+  t.deepEqual(['2NestedStack'], t.context.rootTemplate.Resources['1NestedStack'].DependsOn);
+});

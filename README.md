@@ -41,12 +41,12 @@ Once set, the `nestedStackCount` configuration should never be changed because t
 
 ## Concurrency
 
-In order to avoid `API rate limit` errors, it is possible to configure the plugin in 2 different ways:
+In order to avoid `API rate limit` errors, it is possible to configure the plugin in 3 different ways:
  * Set nested stacks to depend on each others.
  * Set resources in the nested stack to depend on each others.
+ * Manually configure which nested stack depends on which.
 
-This feature comes with a 2 new configurations, `stackConcurrency` and `resourceConcurrency` :
-
+This feature comes with a 3 configurations, `stackConcurrency`, `resourceConcurrency` and `dependsOn` :
 
 ```yaml
 custom:
@@ -56,7 +56,11 @@ custom:
     perGroupFunction: false
     stackConcurrency: 5 # Controls if enabled and how much stacks are deployed in parallel. Disabled if absent.
     resourceConcurrency: 10 # Controls how much resources are deployed in parallel. Disabled if absent.
+    dependsOn: # Object mapping between the nested stacks
+      stack1: stack2
 ```
+
+**Note:** The stackConcurrency and dependsOn options must be used exclusively. An error will be thrown if both of these values are set.
 
 ## Limitations
 
