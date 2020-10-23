@@ -90,7 +90,7 @@ custom:
 
 If you create a file in the root of your Serverless project called `stacks-map.js` this plugin will load it.
 
-This file can customize migrations, either by exporting a simple map of resource type to migration, or a function that ca have whatever logic you want.
+This file can customize migrations, either by exporting a simple map of resource type to migration, or a function that can have whatever logic you want.
 
 ```javascript
 module.exports = {
