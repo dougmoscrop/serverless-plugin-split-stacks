@@ -5,8 +5,8 @@ const sinon = require('sinon');
 
 const utils = require('../../lib/utils');
 
-const fullResources = Array(200).fill().map(() => {});
-const fullOutputs = Array(60).fill().map(() => {});
+const fullResources = Array(500).fill().map(() => {});
+const fullOutputs = Array(200).fill().map(() => {});
 
 test.beforeEach(t => {
 	t.context = Object.assign({}, utils);
