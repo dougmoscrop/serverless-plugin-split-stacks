@@ -76,7 +76,15 @@ custom:
 
 ## Limitations
 
-This plugin is not a substitute for fine-grained services - try to limit the size of your service. This plugin has a hard limit of 200 sub-stacks and does not try to create any kind of tree of nested stacks.
+This plugin is not a substitute for fine-grained services - try to limit the size of your service. This plugin splits on configurable limits on resources, outputs and parameters, with the following values as defaults.
+
+```yaml
+custom:
+  splitsStacks:
+    outputLimit: 200
+    parameterLimit: 200
+    resourceLimit: 500
+```
 
 ## Advanced Usage
 
