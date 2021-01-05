@@ -97,6 +97,14 @@ test('throws if older serverless version is used', t => {
   t.true(e.message.indexOf('requires serverless 1.13 or higher') > 0);
 });
 
+test('accepts 2.x as well', t => {
+  new StackSplitter({
+    ...t.context.serverless,
+    version: '2.0.1',
+  });
+  t.pass();
+});
+
 test('upload does not get encryption params if provider.deploymentBucketObject not set', t => {
   const splitter = t.context.splitter;
 
