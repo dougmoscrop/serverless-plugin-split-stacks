@@ -1,7 +1,7 @@
 service: split-stack-test
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
 
 plugins:
   - serverless-plugin-split-stacks
