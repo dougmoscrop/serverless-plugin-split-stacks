@@ -1,7 +1,5 @@
 'use strict';
 
-const path = require('path');
-
 const test = require('ava');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
