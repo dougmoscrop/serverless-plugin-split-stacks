@@ -1,22 +1,16 @@
 service: split-stack-test
 provider:
   name: aws
-  runtime: nodejs12.x
-  vpc:
-    securityGroupIds:
-      - !Ref MySG
-    subnetIds:
-      - subnet-111111111
-      - subnet-222222222
+  runtime: nodejs8.10
 
 plugins:
-  - ../..
+  - serverless-plugin-split-stacks
   - serverless-plugin-aws-alerts
 
 custom:
   splitStacks:
     perType: true
-    perFunction: true
+    perFunction: false
   alerts:
     stages:
       - dev
@@ -112,8 +106,3 @@ resources:
                 Service:
                   - lambda.amazonaws.com
               Action: sts:AssumeRole
-
-    MySG:
-      Type: 'AWS::EC2:SecurityGroup'
-      Properties:
-        GroupDescription: My SG
