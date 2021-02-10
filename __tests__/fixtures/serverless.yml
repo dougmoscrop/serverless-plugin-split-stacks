@@ -4,7 +4,7 @@ provider:
   runtime: nodejs12.x
 
 plugins:
-  - serverless-plugin-split-stacks
+  - ../..
   - serverless-plugin-aws-alerts
 
 custom:
