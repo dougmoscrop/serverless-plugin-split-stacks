@@ -2,7 +2,7 @@ version: 2
 jobs:
   lint:
     docker:
-      - image: circleci/node:8.10
+      - image: circleci/node:12.18.1
 
     working_directory: ~/repo
 
@@ -25,7 +25,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:8.10
+      - image: circleci/node:12.18.1
 
     working_directory: ~/repo
 
