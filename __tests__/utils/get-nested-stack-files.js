@@ -38,8 +38,8 @@ test.beforeEach(t => {
 test('returns matching files', t => {
 	const files = t.context.getNestedStackFiles();
 	t.true(files.length === 2);
-	t.true(files[0].key === path.join('test', 'cloudformation-Foo-nested-stack.json'));
-	t.true(files[1].key === path.join('test', 'cloudformation-Foo-nested-stack-2.json'));
+	t.true(files[0].key === 'test/cloudformation-Foo-nested-stack.json');
+	t.true(files[1].key === 'test/cloudformation-Foo-nested-stack-2.json');
 });
 
 test('returns a read stream constructor', t => {
