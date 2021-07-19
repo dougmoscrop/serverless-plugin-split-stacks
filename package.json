@@ -42,7 +42,7 @@
     "throat": "^6.0.1"
   },
   "peerDependencies": {
-    "serverless": ">=1.13"
+    "serverless": "1 || 2"
   },
   "ava": {
     "files": [
