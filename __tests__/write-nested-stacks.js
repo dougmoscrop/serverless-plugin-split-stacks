@@ -13,9 +13,9 @@ test.beforeEach(t => {
 			},
       utils: {
 				writeFileSync: sinon.stub()
-			},
-			options: {}
-    }
+			}
+    },
+		options: {}
   });
 });
 
@@ -44,7 +44,7 @@ test('calls write with minified JSON when --minify-template is set', t => {
 	t.context.nestedStacks = {
 		Foo: { bar: {} },
 	};
-	t.context.serverless.options['minify-template'] = true;
+	t.context.options['minify-template'] = true;
 
 	t.context.writeNestedStacks();
 
