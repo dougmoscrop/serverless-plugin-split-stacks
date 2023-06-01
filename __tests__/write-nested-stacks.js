@@ -14,7 +14,8 @@ test.beforeEach(t => {
       utils: {
 				writeFileSync: sinon.stub()
 			}
-    }
+    },
+		options: {}
   });
 });
 
@@ -36,4 +37,19 @@ test('does nothing when there are no nested stacks', t => {
 	t.context.writeNestedStacks();
 
 	t.false(t.context.serverless.utils.writeFileSync.called);
+});
+
+test('calls write with minified JSON when --minify-template is set', t => {
+	t.context.getFileName = () => 'foo.json';
+	t.context.nestedStacks = {
+		Foo: { bar: {} },
+	};
+	t.context.options['minify-template'] = true;
+
+	t.context.writeNestedStacks();
+
+	t.true(t.context.serverless.utils.writeFileSync.calledOnce);
+	t.true(
+		t.context.serverless.utils.writeFileSync.getCall(0).args[1] === '{"bar":{}}'
+	);
 });
