@@ -30,9 +30,7 @@
     "eslint": "^8.26.0",
     "nyc": "^15.1.0",
     "proxyquire": "^2.1.3",
-    "serverless": "^3.23.0",
-    "serverless-plugin-aws-alerts": "^1.7.5",
-    "serverless-plugin-lambda-dead-letter": "^1.2.1",
+    "serverless": "^4.1.15",
     "sinon": "^14.0.1"
   },
   "dependencies": {
@@ -42,7 +40,7 @@
     "throat": "^6.0.1"
   },
   "peerDependencies": {
-    "serverless": "1 || 2 || 3"
+    "serverless": "1 || 2 || 3 || 4"
   },
   "ava": {
     "files": [
