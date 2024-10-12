@@ -9,7 +9,7 @@ const originalRequest = https.request;
 test.beforeEach(t => {
   https.request = originalRequest;
   t.context = Object.assign(
-    {},
+    { config: {} },
     { serverless: { service: { provider: {} } } }
   );
 });
