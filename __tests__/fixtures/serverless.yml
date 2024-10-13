@@ -1,11 +1,10 @@
 service: split-stack-test
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
 
 plugins:
   - ../..
-  - serverless-plugin-aws-alerts
 
 custom:
   splitStacks:
@@ -36,7 +35,7 @@ functions:
   b:
     handler: handlers.b
     events:
-      - s3: split-stacks-test-${self:provider.stage}-abc
+      - s3: split-stacks-test-${sls:stage}-abc
   c:
     handler: handlers.a
     role: customRole

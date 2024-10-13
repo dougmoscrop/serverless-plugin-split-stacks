@@ -1,6 +1,6 @@
-[![CircleCI](https://circleci.com/gh/dougmoscrop/serverless-plugin-split-stacks.svg?style=svg)](https://circleci.com/gh/dougmoscrop/serverless-plugin-split-stacks)
-
 # serverless-plugin-split-stacks
+
+Using this plugin is a bad idea. It means you've allowed your serverless service to grow in to something huge.
 
 This plugin migrates CloudFormation resources in to nested stacks in order to work around the 500 resource limit.
 
