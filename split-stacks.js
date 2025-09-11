@@ -28,7 +28,8 @@ class ServerlessPluginSplitStacks {
     this.provider = this.serverless.getProvider('aws');
     this.hooks = {
       'after:aws:package:finalize:mergeCustomProviderResources': this.split.bind(this),
-      'aws:deploy:deploy:uploadArtifacts': this.upload.bind(this)
+      // 'aws:deploy:deploy:uploadArtifacts': this.upload.bind(this)
+      // Serverless will now upload our nested stack files automatically
     };
 
     Object.assign(this,
