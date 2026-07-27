@@ -9,16 +9,16 @@ if (process.platform === 'win32') {
 
 cd(path.join(__dirname, 'fixtures'))
 
-await $`npx serverless deploy`
-await $`npx serverless invoke -f a`
-await $`npx serverless invoke -f b`
+await $`npx serverless deploy --stage donb`
+await $`npx serverless invoke -f a --stage donb`
+await $`npx serverless invoke -f b --stage donb`
 
 const cf = new CloudFormationClient({
   region: 'us-east-1',
 });
 
 await cf.send(new DescribeStackResourcesCommand({
-  StackName: 'split-stack-test-dev'
+  StackName: 'split-stack-test-donb'
 }))
 .then(res => {
   return res.StackResources.find(res => {
@@ -54,4 +54,4 @@ await cf.send(new DescribeStackResourcesCommand({
   console.log('test failed', e)
 })
 
-await $`npx serverless remove`
+await $`npx serverless remove --stage donb`
