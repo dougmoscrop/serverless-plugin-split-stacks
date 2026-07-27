@@ -1,5 +1,5 @@
 import { usePowerShell, cd } from 'zx'
-import aws from 'aws-sdk'
+import { CloudFormationClient, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation'
 
 /* eslint-disable no-console */
 
@@ -13,14 +13,13 @@ await $`npx serverless deploy`
 await $`npx serverless invoke -f a`
 await $`npx serverless invoke -f b`
 
-const cf = new aws.CloudFormation({
+const cf = new CloudFormationClient({
   region: 'us-east-1',
 });
 
-await cf.describeStackResources({
+await cf.send(new DescribeStackResourcesCommand({
   StackName: 'split-stack-test-dev'
-})
-.promise()
+}))
 .then(res => {
   return res.StackResources.find(res => {
     return res.LogicalResourceId === 'PermissionsNestedStack';
@@ -31,10 +30,9 @@ await cf.describeStackResources({
     const arnParts = stack.PhysicalResourceId.split(':');
     const nameParts = arnParts[5].split('/');
 
-    return cf.describeStackResources({
+    return cf.send(new DescribeStackResourcesCommand({
       StackName: nameParts[1]
-    })
-    .promise();
+    }));
   }
   throw new Error('Could not find Permissions nested stack');
 })

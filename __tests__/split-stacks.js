@@ -2,6 +2,7 @@
 
 const test = require('ava');
 const sinon = require('sinon');
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const StackSplitter = require('../split-stacks');
 const sampleTemplate = require('./fixtures/sample-template.json');
@@ -107,7 +108,9 @@ test('upload does not get encryption params if provider.deploymentBucketObject n
     key: 'test',
     createReadStream: sinon.stub()
   }]);
-  splitter.provider.request = sinon.stub().resolves();
+  splitter.getS3Client = sinon.stub().returns({
+    send: sinon.stub().resolves()
+  });
 
   return splitter.upload()
     .then(() => {
@@ -127,10 +130,44 @@ test('upload does get encryption params if provider.deploymentBucketObject set',
     key: 'test',
     createReadStream: sinon.stub()
   }]);
-  splitter.provider.request = sinon.stub().resolves();
+  splitter.getS3Client = sinon.stub().returns({
+    send: sinon.stub().resolves()
+  });
 
   return splitter.upload()
     .then(() => {
       t.true(stub.calledOnce);
+    });
+});
+
+test('upload sends a PutObjectCommand for each nested stack file via the S3 client', t => {
+  const splitter = t.context.splitter;
+
+  splitter.getEncryptionParams = sinon.stub().returns({});
+  splitter.provider.getServerlessDeploymentBucketName = sinon.stub().resolves('test-bucket');
+  splitter.getNestedStackFiles = sinon.stub().returns([{
+    key: 'nested-stack.json',
+    createReadStream: sinon.stub().returns('body')
+  }]);
+
+  const client = { send: () => {} };
+  const mock = sinon.mock(client);
+
+  mock.expects('send')
+    .once()
+    .withArgs(sinon.match(command => {
+      return command instanceof PutObjectCommand
+        && command.input.Bucket === 'test-bucket'
+        && command.input.Key === 'nested-stack.json'
+        && command.input.Body === 'body'
+        && command.input.ContentType === 'application/json';
+    }))
+    .resolves();
+
+  splitter.getS3Client = sinon.stub().returns(client);
+
+  return splitter.upload()
+    .then(() => {
+      t.notThrows(() => mock.verify());
     });
 });

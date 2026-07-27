@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const semver = require('semver');
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const setDeploymentBucketEndpoint = require('./lib/deployment-bucket-endpoint');
 const migrateExistingResources = require('./lib/migrate-existing-resources');
@@ -72,6 +73,7 @@ class ServerlessPluginSplitStacks {
 
   upload() {
     const deploymentBucketObject = this.serverless.service.provider.deploymentBucketObject;
+    const s3Client = this.getS3Client();
 
     return this.provider.getServerlessDeploymentBucketName(this.options.stage, this.options.region)
       .then(deploymentBucket => {
@@ -90,7 +92,7 @@ class ServerlessPluginSplitStacks {
             Object.assign(params, encryptionParams);
           }
 
-          return this.provider.request('S3', 'putObject', params);
+          return s3Client.send(new PutObjectCommand(params));
         }));
       });
   }

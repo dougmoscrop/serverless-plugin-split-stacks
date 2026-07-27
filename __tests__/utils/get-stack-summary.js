@@ -3,6 +3,7 @@
 const test = require('ava');
 const sinon = require('sinon');
 
+const { ListStackResourcesCommand } = require('@aws-sdk/client-cloudformation');
 const utils = require('../../lib/utils');
 
 test.beforeEach(t => {
@@ -10,27 +11,31 @@ test.beforeEach(t => {
 });
 
 test('calls once', t => {
-	const request = sinon.mock().withArgs('CloudFormation', 'listStackResources', {
-		StackName: 'foo',
-		NextToken: undefined
-	})
-	.resolves({
-		StackResourceSummaries: ['a']
-	});
+	const client = { send: () => {} };
+	const mock = sinon.mock(client);
 
-	t.context.provider = {
-		request
-	};
+	mock.expects('send')
+		.once()
+		.withArgs(sinon.match(command => {
+			return command instanceof ListStackResourcesCommand
+				&& command.input.StackName === 'foo'
+				&& command.input.NextToken === undefined;
+		}))
+		.resolves({
+			StackResourceSummaries: ['a']
+		});
+
+	t.context.getCloudFormationClient = sinon.stub().returns(client);
 
 	return t.context.getStackSummary('foo')
 		.then(summary => {
-			t.true(request.calledOnce);
+			mock.verify();
 			t.deepEqual(summary, ['a']);
 		});
 });
 
 test('calls twice with NextToken', t => {
-	const request = sinon.stub()
+	const send = sinon.stub()
 		.onCall(0).resolves({
 			StackResourceSummaries: ['a'],
 			NextToken: 'banana'
@@ -39,19 +44,17 @@ test('calls twice with NextToken', t => {
 			StackResourceSummaries: ['b']
 		});
 
-	t.context.provider = {
-		request
-	};
+	t.context.getCloudFormationClient = sinon.stub().returns({ send });
 
 	return t.context.getStackSummary('foo')
 		.then(summary => {
-			t.true(request.calledTwice);
+			t.true(send.calledTwice);
 			t.deepEqual(summary, ['a', 'b']);
 		});
 });
 
 test('retry on Rate exceeeded', t => {
-	const request = sinon.stub()
+	const send = sinon.stub()
 		.onCall(0).rejects({
 			message: 'Rate exceeded'
 		})
@@ -62,13 +65,11 @@ test('retry on Rate exceeeded', t => {
 			StackResourceSummaries: ['a']
 		});
 
-	t.context.provider = {
-		request
-	};
+	t.context.getCloudFormationClient = sinon.stub().returns({ send });
 
 	return t.context.getStackSummary('foo')
 		.then(summary => {
-			t.true(request.calledThrice);
+			t.true(send.calledThrice);
 			t.deepEqual(summary, ['a']);
 		});
 });
