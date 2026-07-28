@@ -7,6 +7,7 @@ const utils = require('../../lib/utils');
 
 test.beforeEach(t => {
 	t.context = Object.assign({}, utils, {
+		deploymentBucketName: 'my-bucket-name',
 		deploymentBucketEndpoint: 's3.amazonaws.com',
 		serverless: {
 			service: {
@@ -27,7 +28,8 @@ test('creates a resource with the right type', t => {
 });
 
 test('creates a resource with the right URL', t => {
-	const output = t.context.nestedStackResource('test');
+  t.context.deploymentBucketName = { Ref: 'ServerlessDeploymentBucket' };
+  const output = t.context.nestedStackResource('test');
 
 	t.true(Array.isArray(output.Properties.TemplateURL['Fn::Join']));
 	t.deepEqual(output.Properties.TemplateURL['Fn::Join'][0], '/');
@@ -44,8 +46,6 @@ test('creates a resource with the right URL', t => {
 });
 
 test('creates a resource with the right URL when a custom bucket is used', t => {
-	t.context.serverless.service.provider.deploymentBucket = 'my-bucket-name';
-
 	const output = t.context.nestedStackResource('test');
 
 	t.true(Array.isArray(output.Properties.TemplateURL['Fn::Join']));
