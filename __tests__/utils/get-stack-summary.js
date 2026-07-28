@@ -25,7 +25,7 @@ test('calls once', t => {
 			StackResourceSummaries: ['a']
 		});
 
-	t.context.getCloudFormationClient = sinon.stub().returns(client);
+	t.context.getCloudFormationClient = sinon.stub().resolves(client);
 
 	return t.context.getStackSummary('foo')
 		.then(summary => {
@@ -44,7 +44,7 @@ test('calls twice with NextToken', t => {
 			StackResourceSummaries: ['b']
 		});
 
-	t.context.getCloudFormationClient = sinon.stub().returns({ send });
+	t.context.getCloudFormationClient = sinon.stub().resolves({ send });
 
 	return t.context.getStackSummary('foo')
 		.then(summary => {
@@ -65,7 +65,7 @@ test('retry on Rate exceeeded', t => {
 			StackResourceSummaries: ['a']
 		});
 
-	t.context.getCloudFormationClient = sinon.stub().returns({ send });
+	t.context.getCloudFormationClient = sinon.stub().resolves({ send });
 
 	return t.context.getStackSummary('foo')
 		.then(summary => {

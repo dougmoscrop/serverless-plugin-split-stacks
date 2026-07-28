@@ -73,10 +73,12 @@ class ServerlessPluginSplitStacks {
 
   upload() {
     const deploymentBucketObject = this.serverless.service.provider.deploymentBucketObject;
-    const s3Client = this.getS3Client();
 
-    return this.provider.getServerlessDeploymentBucketName(this.options.stage, this.options.region)
-      .then(deploymentBucket => {
+    return Promise.all([
+      this.getS3Client(),
+      this.provider.getServerlessDeploymentBucketName(this.options.stage, this.options.region)
+    ])
+      .then(([s3Client, deploymentBucket]) => {
         const files = this.getNestedStackFiles();
 
         return Promise.all(_.map(files, file => {

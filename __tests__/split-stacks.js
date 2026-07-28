@@ -108,7 +108,7 @@ test('upload does not get encryption params if provider.deploymentBucketObject n
     key: 'test',
     createReadStream: sinon.stub()
   }]);
-  splitter.getS3Client = sinon.stub().returns({
+  splitter.getS3Client = sinon.stub().resolves({
     send: sinon.stub().resolves()
   });
 
@@ -130,7 +130,7 @@ test('upload does get encryption params if provider.deploymentBucketObject set',
     key: 'test',
     createReadStream: sinon.stub()
   }]);
-  splitter.getS3Client = sinon.stub().returns({
+  splitter.getS3Client = sinon.stub().resolves({
     send: sinon.stub().resolves()
   });
 
@@ -164,7 +164,7 @@ test('upload sends a PutObjectCommand for each nested stack file via the S3 clie
     }))
     .resolves();
 
-  splitter.getS3Client = sinon.stub().returns(client);
+  splitter.getS3Client = sinon.stub().resolves(client);
 
   return splitter.upload()
     .then(() => {
